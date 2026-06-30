@@ -3,13 +3,17 @@
 ## Open feature gaps vs. the web UI
 
 ### Equipment management
-Grocy's web UI has an "Equipment" section (manage equipment items, attach manuals/files).
-This feature is currently **not implemented in the Android app** — it's only reachable
-through the web interface. Bringing it to Android would require:
+Done. Equipment now has a full master-data CRUD screen (list + edit), reachable from the
+master data overview, with the same offline Room-cache sync as the other master-data
+entities.
 
-- A new Fragment + ViewModel for the Equipment list/detail screens (following the existing
-  MVVM pattern: Fragment → ViewModel → Repository → Room cache)
-- API client methods in `GrocyApi.java` for the `equipment` and related file-upload endpoints
-- A navigation entry point (e.g. in the drawer/bottom navigation) to reach the new screens
+### Bulk-edit
+In progress. Generic bulk-delete for master-data lists and Products bulk field-edit are
+being added, mirroring the web UI's bulk-edit feature.
 
-No work has started on this yet.
+### Stock-entry bulk actions (change-location, link-receipt, open, consume, printlabel)
+Planned. `link-receipt` is being prioritized alongside the receipts feature; the rest are
+lower priority for now.
+
+### Receipts
+Planned, to be branched off `to-be-merged-with-main` once bulk-edit is done.
