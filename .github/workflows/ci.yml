@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - to-be-merged-with-main
+      - receipts
       - 'claude/**'
   pull_request:
     branches:
       - to-be-merged-with-main
+      - receipts
       - master
 
 jobs:
