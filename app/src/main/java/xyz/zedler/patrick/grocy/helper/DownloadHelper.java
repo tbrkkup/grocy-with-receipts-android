@@ -51,6 +51,7 @@ import xyz.zedler.patrick.grocy.database.AppDatabase;
 import xyz.zedler.patrick.grocy.model.Chore;
 import xyz.zedler.patrick.grocy.model.ChoreEntry;
 import xyz.zedler.patrick.grocy.model.Equipment;
+import xyz.zedler.patrick.grocy.model.Receipt;
 import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.MealPlanEntry;
 import xyz.zedler.patrick.grocy.model.MealPlanSection;
@@ -567,6 +568,8 @@ public class DownloadHelper {
         queue.append(TaskCategory.updateTaskCategories(this, dbChangedTime, forceUpdate, null));
       } else if (type == Equipment.class) {
         queue.append(Equipment.updateEquipment(this, dbChangedTime, forceUpdate, null));
+      } else if (type == Receipt.class) {
+        queue.append(Receipt.updateReceipts(this, dbChangedTime, forceUpdate, null));
       } else if (type == Chore.class) {
         queue.append(Chore.updateChores(this, dbChangedTime, forceUpdate, null));
       } else if (type == ChoreEntry.class) {

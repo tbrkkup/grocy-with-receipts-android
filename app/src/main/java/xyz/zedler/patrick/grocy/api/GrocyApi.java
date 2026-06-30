@@ -66,6 +66,8 @@ public class GrocyApi {
     public final static String CHORES = "chores";
     public final static String USERFIELDS = "userfields";
     public final static String EQUIPMENT = "equipment";
+    public final static String RECEIPTS = "receipts";
+    public final static String RECEIPT_FILES = "receipt_files";
   }
 
   public final static class COMPARISON_OPERATOR {
@@ -529,5 +531,16 @@ public class GrocyApi {
   public String getProductPictureServeLarge(String filename) {
     return getProductPicture(filename)
         + "?force_serve_as=picture&best_fit_height=800&best_fit_width=1280";
+  }
+
+  public String getReceiptFile(String filename) {
+    String fileNameEncoded = new String(Base64.encode(
+        filename.getBytes(StandardCharsets.UTF_8),
+        Base64.DEFAULT
+    ), StandardCharsets.UTF_8);
+    return getUrl(
+        "/files/receipts/"
+            + fileNameEncoded.replace("\n", "")
+    );
   }
 }

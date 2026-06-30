@@ -107,6 +107,7 @@ public final class Constants {
     public final static String DB_LAST_TIME_TASKS = "db_last_time_tasks";
     public final static String DB_LAST_TIME_TASK_CATEGORIES = "db_last_time_task_categories";
     public final static String DB_LAST_TIME_EQUIPMENT = "db_last_time_equipment";
+    public final static String DB_LAST_TIME_RECEIPTS = "db_last_time_receipts";
     public final static String DB_LAST_TIME_CHORES = "db_last_time_chores";
     public final static String DB_LAST_TIME_CHORE_ENTRIES = "db_last_time_chore_entries";
     public final static String DB_LAST_TIME_USERS = "db_last_time_users";
