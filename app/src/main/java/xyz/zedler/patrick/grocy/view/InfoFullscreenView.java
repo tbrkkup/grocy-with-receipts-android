@@ -24,6 +24,7 @@ import static xyz.zedler.patrick.grocy.model.InfoFullscreen.ERROR_NETWORK;
 import static xyz.zedler.patrick.grocy.model.InfoFullscreen.ERROR_OFFLINE;
 import static xyz.zedler.patrick.grocy.model.InfoFullscreen.ERROR_UNSPECIFIED;
 import static xyz.zedler.patrick.grocy.model.InfoFullscreen.INFO_EMPTY_CHORES;
+import static xyz.zedler.patrick.grocy.model.InfoFullscreen.INFO_EMPTY_EQUIPMENT;
 import static xyz.zedler.patrick.grocy.model.InfoFullscreen.INFO_EMPTY_INGREDIENTS;
 import static xyz.zedler.patrick.grocy.model.InfoFullscreen.INFO_EMPTY_LOCATIONS;
 import static xyz.zedler.patrick.grocy.model.InfoFullscreen.INFO_EMPTY_PRODUCTS;
@@ -170,6 +171,12 @@ public class InfoFullscreenView extends RelativeLayout {
       case INFO_EMPTY_TASK_CATEGORIES:
         picture = R.drawable.illustration_toast;
         title = R.string.error_empty_task_categories;
+        subtitle = R.string.error_empty_master_data_sub;
+        inForeground = false;
+        break;
+      case INFO_EMPTY_EQUIPMENT:
+        picture = R.drawable.illustration_toast;
+        title = R.string.error_empty_equipment;
         subtitle = R.string.error_empty_master_data_sub;
         inForeground = false;
         break;

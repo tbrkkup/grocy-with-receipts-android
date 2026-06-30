@@ -269,6 +269,33 @@
               </LinearLayout>
 
               <LinearLayout
+                android:id="@+id/linear_equipment"
+                style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine.Clickable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                  style="@style/Widget.Grocy.ImageView.ListItem.Icon"
+                  android:importantForAccessibility="no"
+                  android:src="@drawable/ic_round_view_list"
+                  tools:ignore="ContentDescription" />
+
+                <LinearLayout style="@style/Widget.Grocy.LinearLayout.ListItem.TextBox.Stretch">
+
+                  <TextView
+                    android:id="@+id/title_equipment"
+                    style="@style/Widget.Grocy.TextView.ListItem.Title"
+                    android:text="@string/property_equipment" />
+
+                  <TextView
+                    android:id="@+id/count_equipment"
+                    style="@style/Widget.Grocy.TextView.ListItem.Description" />
+
+                </LinearLayout>
+
+              </LinearLayout>
+
+              <LinearLayout
                 android:id="@+id/linear_chores"
                 style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine.Clickable"
                 android:layout_width="match_parent"

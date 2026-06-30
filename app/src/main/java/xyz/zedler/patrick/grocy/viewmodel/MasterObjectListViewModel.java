@@ -41,6 +41,7 @@ import xyz.zedler.patrick.grocy.api.GrocyApi.ENTITY;
 import xyz.zedler.patrick.grocy.fragment.bottomSheetDialog.ProductOverviewBottomSheet;
 import xyz.zedler.patrick.grocy.fragment.bottomSheetDialog.ProductOverviewBottomSheetArgs;
 import xyz.zedler.patrick.grocy.helper.DownloadHelper;
+import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.model.Event;
 import xyz.zedler.patrick.grocy.model.FilterChipLiveData;
 import xyz.zedler.patrick.grocy.model.FilterChipLiveDataProductGroup;
@@ -137,6 +138,9 @@ public class MasterObjectListViewModel extends BaseViewModel {
         case ENTITY.TASK_CATEGORIES:
           this.objects = data.getTaskCategories();
           break;
+        case ENTITY.EQUIPMENT:
+          this.objects = data.getEquipmentList();
+          break;
         default:
           this.objects = data.getStores();
           break;
@@ -166,6 +170,7 @@ public class MasterObjectListViewModel extends BaseViewModel {
         (entity.equals(GrocyApi.ENTITY.QUANTITY_UNITS) || entity.equals(GrocyApi.ENTITY.PRODUCTS))
             ? QuantityUnit.class : null,
         entity.equals(ENTITY.TASK_CATEGORIES) ? TaskCategory.class : null,
+        entity.equals(ENTITY.EQUIPMENT) ? Equipment.class : null,
         entity.equals(GrocyApi.ENTITY.PRODUCTS) ? Product.class : null,
         Userfield.class
     );

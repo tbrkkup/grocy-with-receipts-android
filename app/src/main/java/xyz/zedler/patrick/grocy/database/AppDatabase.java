@@ -57,12 +57,14 @@ import xyz.zedler.patrick.grocy.dao.StockItemDao;
 import xyz.zedler.patrick.grocy.dao.StockLocationDao;
 import xyz.zedler.patrick.grocy.dao.StoreDao;
 import xyz.zedler.patrick.grocy.dao.StoredPurchaseDao;
+import xyz.zedler.patrick.grocy.dao.EquipmentDao;
 import xyz.zedler.patrick.grocy.dao.TaskCategoryDao;
 import xyz.zedler.patrick.grocy.dao.TaskDao;
 import xyz.zedler.patrick.grocy.dao.UserDao;
 import xyz.zedler.patrick.grocy.dao.UserfieldDao;
 import xyz.zedler.patrick.grocy.dao.VolatileItemDao;
 import xyz.zedler.patrick.grocy.model.Chore;
+import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.model.ChoreEntry;
 import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.MealPlanEntry;
@@ -134,12 +136,13 @@ import xyz.zedler.patrick.grocy.repository.MainRepository.OnVersionListener;
         RecipeNesting.class,
         MealPlanEntry.class,
         MealPlanSection.class,
-        Userfield.class
+        Userfield.class,
+        Equipment.class
     },
     views = {
         RecipeNestingResolved.class
     },
-    version = 54
+    version = 55
 )
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
@@ -177,6 +180,8 @@ public abstract class AppDatabase extends RoomDatabase {
   public abstract TaskDao taskDao();
 
   public abstract TaskCategoryDao taskCategoryDao();
+
+  public abstract EquipmentDao equipmentDao();
 
   public abstract ProductLastPurchasedDao productLastPurchasedDao();
 

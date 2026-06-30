@@ -23,6 +23,7 @@ package xyz.zedler.patrick.grocy.util;
 import androidx.annotation.Nullable;
 import java.util.Map;
 import xyz.zedler.patrick.grocy.api.GrocyApi;
+import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
@@ -46,6 +47,8 @@ public class ObjectUtil {
         return ((Product) object).getId();
       case GrocyApi.ENTITY.TASK_CATEGORIES:
         return ((TaskCategory) object).getId();
+      case GrocyApi.ENTITY.EQUIPMENT:
+        return ((Equipment) object).getId();
       default:
         return -1;
     }
@@ -66,6 +69,8 @@ public class ObjectUtil {
         return ((Product) object).getName();
       case GrocyApi.ENTITY.TASK_CATEGORIES:
         return ((TaskCategory) object).getName();
+      case GrocyApi.ENTITY.EQUIPMENT:
+        return ((Equipment) object).getName();
       default:
         return null;
     }
@@ -86,6 +91,8 @@ public class ObjectUtil {
         return ((Product) object).getDescription();
       case GrocyApi.ENTITY.TASK_CATEGORIES:
         return ((TaskCategory) object).getDescription();
+      case GrocyApi.ENTITY.EQUIPMENT:
+        return ((Equipment) object).getDescription();
       default:
         return null;
     }
@@ -106,6 +113,8 @@ public class ObjectUtil {
         return ((Product) object).getRowCreatedTimestamp();
       case GrocyApi.ENTITY.TASK_CATEGORIES:
         return ((TaskCategory) object).getRowCreatedTimestamp();
+      case GrocyApi.ENTITY.EQUIPMENT:
+        return ((Equipment) object).getRowCreatedTimestamp();
       default:
         return null;
     }
@@ -126,6 +135,8 @@ public class ObjectUtil {
         return ((Product) object).getUserfields();
       case GrocyApi.ENTITY.TASK_CATEGORIES:
         return ((TaskCategory) object).getUserfields();
+      case GrocyApi.ENTITY.EQUIPMENT:
+        return ((Equipment) object).getUserfields();
       default:
         return null;
     }
