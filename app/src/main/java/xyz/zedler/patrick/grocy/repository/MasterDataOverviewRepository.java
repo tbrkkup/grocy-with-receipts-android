@@ -32,6 +32,7 @@ import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
 import xyz.zedler.patrick.grocy.model.QuantityUnit;
+import xyz.zedler.patrick.grocy.model.Receipt;
 import xyz.zedler.patrick.grocy.model.Store;
 import xyz.zedler.patrick.grocy.model.TaskCategory;
 
@@ -56,6 +57,7 @@ public class MasterDataOverviewRepository {
     private final List<Product> products;
     private final List<TaskCategory> taskCategories;
     private final List<Equipment> equipmentList;
+    private final List<Receipt> receipts;
 
     public MasterDataOverviewData(
         List<Store> stores,
@@ -64,7 +66,8 @@ public class MasterDataOverviewRepository {
         List<QuantityUnit> quantityUnits,
         List<Product> products,
         List<TaskCategory> taskCategories,
-        List<Equipment> equipmentList
+        List<Equipment> equipmentList,
+        List<Receipt> receipts
     ) {
       this.stores = stores;
       this.locations = locations;
@@ -73,6 +76,7 @@ public class MasterDataOverviewRepository {
       this.products = products;
       this.taskCategories = taskCategories;
       this.equipmentList = equipmentList;
+      this.receipts = receipts;
     }
 
     public List<Store> getStores() {
@@ -102,6 +106,10 @@ public class MasterDataOverviewRepository {
     public List<Equipment> getEquipmentList() {
       return equipmentList;
     }
+
+    public List<Receipt> getReceipts() {
+      return receipts;
+    }
   }
 
   public void loadFromDatabase(DataListener onSuccess, Consumer<Throwable> onError) {
@@ -114,6 +122,7 @@ public class MasterDataOverviewRepository {
             appDatabase.productDao().getProducts(),
             appDatabase.taskCategoryDao().getTaskCategories(),
             appDatabase.equipmentDao().getEquipment(),
+            appDatabase.receiptDao().getReceipts(),
             MasterDataOverviewData::new
         )
         .subscribeOn(Schedulers.io())

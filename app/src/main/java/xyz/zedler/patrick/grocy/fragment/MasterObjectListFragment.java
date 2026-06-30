@@ -61,6 +61,7 @@ import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
 import xyz.zedler.patrick.grocy.model.QuantityUnit;
+import xyz.zedler.patrick.grocy.model.Receipt;
 import xyz.zedler.patrick.grocy.model.SnackbarMessage;
 import xyz.zedler.patrick.grocy.model.Store;
 import xyz.zedler.patrick.grocy.model.TaskCategory;
@@ -112,6 +113,9 @@ public class MasterObjectListFragment extends BaseFragment
         break;
       case ENTITY.EQUIPMENT:
         title = R.string.property_equipment;
+        break;
+      case ENTITY.RECEIPTS:
+        title = R.string.property_receipts;
         break;
       default: // STORES
         title = R.string.property_stores;
@@ -194,6 +198,9 @@ public class MasterObjectListFragment extends BaseFragment
               break;
             case ENTITY.EQUIPMENT:
               fullscreenType = InfoFullscreen.INFO_EMPTY_EQUIPMENT;
+              break;
+            case ENTITY.RECEIPTS:
+              fullscreenType = InfoFullscreen.INFO_EMPTY_RECEIPTS;
               break;
             default: // STORES
               fullscreenType = InfoFullscreen.INFO_EMPTY_STORES;
@@ -329,6 +336,10 @@ public class MasterObjectListFragment extends BaseFragment
             case ENTITY.EQUIPMENT:
               activity.navUtil.navigate(MasterObjectListFragmentDirections
                   .actionMasterObjectListFragmentToMasterEquipmentFragment());
+              break;
+            case ENTITY.RECEIPTS:
+              activity.navUtil.navigate(MasterObjectListFragmentDirections
+                  .actionMasterObjectListFragmentToMasterReceiptFragment());
               break;
           }
         }
@@ -551,6 +562,11 @@ public class MasterObjectListFragment extends BaseFragment
         activity.navUtil.navigate(MasterObjectListFragmentDirections
             .actionMasterObjectListFragmentToMasterEquipmentFragment()
             .setEquipment((Equipment) object));
+        break;
+      case GrocyApi.ENTITY.RECEIPTS:
+        activity.navUtil.navigate(MasterObjectListFragmentDirections
+            .actionMasterObjectListFragmentToMasterReceiptFragment()
+            .setReceipt((Receipt) object));
         break;
       case GrocyApi.ENTITY.PRODUCTS:
         viewModel.showProductBottomSheet((Product) object);

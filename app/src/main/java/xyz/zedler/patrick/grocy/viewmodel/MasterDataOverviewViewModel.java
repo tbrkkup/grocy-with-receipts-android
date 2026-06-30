@@ -26,6 +26,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.List;
 import xyz.zedler.patrick.grocy.helper.DownloadHelper;
 import xyz.zedler.patrick.grocy.model.Equipment;
+import xyz.zedler.patrick.grocy.model.Receipt;
 import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
@@ -49,6 +50,7 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
   private final MutableLiveData<List<Product>> productsLive;
   private final MutableLiveData<List<TaskCategory>> taskCategoriesLive;
   private final MutableLiveData<List<Equipment>> equipmentLive;
+  private final MutableLiveData<List<Receipt>> receiptsLive;
 
   public MasterDataOverviewViewModel(@NonNull Application application) {
     super(application);
@@ -64,6 +66,7 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
     productsLive = new MutableLiveData<>();
     taskCategoriesLive = new MutableLiveData<>();
     equipmentLive = new MutableLiveData<>();
+    receiptsLive = new MutableLiveData<>();
   }
 
   public void loadFromDatabase(boolean downloadAfterLoading) {
@@ -75,6 +78,7 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
       this.productsLive.setValue(data.getProducts());
       this.taskCategoriesLive.setValue(data.getTaskCategories());
       this.equipmentLive.setValue(data.getEquipmentList());
+      this.receiptsLive.setValue(data.getReceipts());
       if (downloadAfterLoading) {
         downloadData(false);
       }
@@ -94,7 +98,8 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
         QuantityUnit.class,
         Product.class,
         TaskCategory.class,
-        Equipment.class
+        Equipment.class,
+        Receipt.class
     );
   }
 
@@ -130,6 +135,10 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
 
   public MutableLiveData<List<Equipment>> getEquipmentLive() {
     return equipmentLive;
+  }
+
+  public MutableLiveData<List<Receipt>> getReceiptsLive() {
+    return receiptsLive;
   }
 
   @Override

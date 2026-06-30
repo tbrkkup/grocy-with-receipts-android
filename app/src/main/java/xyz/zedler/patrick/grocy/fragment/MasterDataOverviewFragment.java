@@ -128,6 +128,12 @@ public class MasterDataOverviewFragment extends BaseFragment {
                 GrocyApi.ENTITY.EQUIPMENT
             ))
     );
+    binding.linearReceipts.setOnClickListener(v -> activity.navUtil.navigate(
+        MasterDataOverviewFragmentDirections
+            .actionMasterDataOverviewFragmentToMasterObjectListFragment(
+                GrocyApi.ENTITY.RECEIPTS
+            ))
+    );
     binding.linearChores.setOnClickListener(v -> viewModel.showMessageWithAction(
         R.string.msg_not_implemented_yet,
         R.string.action_open_server,
@@ -201,6 +207,14 @@ public class MasterDataOverviewFragment extends BaseFragment {
         equipmentList -> binding.countEquipment.setText(
             equipmentList != null
                 ? String.valueOf(equipmentList.size())
+                : getString(R.string.subtitle_unknown)
+        )
+    );
+    viewModel.getReceiptsLive().observe(
+        getViewLifecycleOwner(),
+        receipts -> binding.countReceipts.setText(
+            receipts != null
+                ? String.valueOf(receipts.size())
                 : getString(R.string.subtitle_unknown)
         )
     );

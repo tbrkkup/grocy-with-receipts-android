@@ -684,6 +684,9 @@
       <action
         android:id="@+id/action_masterObjectListFragment_to_masterEquipmentFragment"
         app:destination="@id/masterEquipmentFragment" />
+      <action
+        android:id="@+id/action_masterObjectListFragment_to_masterReceiptFragment"
+        app:destination="@id/masterReceiptFragment" />
     </fragment>
     <fragment
       android:id="@+id/masterLocationFragment"
@@ -983,6 +986,17 @@
       <argument
         android:name="equipment"
         app:argType="xyz.zedler.patrick.grocy.model.Equipment"
+        app:nullable="true"
+        android:defaultValue="@null" />
+    </fragment>
+    <fragment
+      android:id="@+id/masterReceiptFragment"
+      android:name="xyz.zedler.patrick.grocy.fragment.MasterReceiptFragment"
+      android:label="MasterReceiptFragment"
+      tools:layout="@layout/fragment_master_receipt">
+      <argument
+        android:name="receipt"
+        app:argType="xyz.zedler.patrick.grocy.model.Receipt"
         app:nullable="true"
         android:defaultValue="@null" />
     </fragment>

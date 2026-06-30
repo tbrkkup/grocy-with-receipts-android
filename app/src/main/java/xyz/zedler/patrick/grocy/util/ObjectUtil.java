@@ -25,6 +25,7 @@ import java.util.Map;
 import xyz.zedler.patrick.grocy.api.GrocyApi;
 import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.model.Location;
+import xyz.zedler.patrick.grocy.model.Receipt;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
 import xyz.zedler.patrick.grocy.model.QuantityUnit;
@@ -49,6 +50,8 @@ public class ObjectUtil {
         return ((TaskCategory) object).getId();
       case GrocyApi.ENTITY.EQUIPMENT:
         return ((Equipment) object).getId();
+      case GrocyApi.ENTITY.RECEIPTS:
+        return ((Receipt) object).getId();
       default:
         return -1;
     }
@@ -71,6 +74,18 @@ public class ObjectUtil {
         return ((TaskCategory) object).getName();
       case GrocyApi.ENTITY.EQUIPMENT:
         return ((Equipment) object).getName();
+      case GrocyApi.ENTITY.RECEIPTS:
+        Receipt receipt = (Receipt) object;
+        String date = receipt.getDate();
+        String desc = receipt.getDescription();
+        StringBuilder label = new StringBuilder(date != null ? date : "");
+        if (desc != null && !desc.isEmpty()) {
+          if (label.length() > 0) {
+            label.append(" · ");
+          }
+          label.append(desc);
+        }
+        return label.length() > 0 ? label.toString() : "#" + receipt.getId();
       default:
         return null;
     }
@@ -93,6 +108,8 @@ public class ObjectUtil {
         return ((TaskCategory) object).getDescription();
       case GrocyApi.ENTITY.EQUIPMENT:
         return ((Equipment) object).getDescription();
+      case GrocyApi.ENTITY.RECEIPTS:
+        return ((Receipt) object).getDescription();
       default:
         return null;
     }
@@ -115,6 +132,8 @@ public class ObjectUtil {
         return ((TaskCategory) object).getRowCreatedTimestamp();
       case GrocyApi.ENTITY.EQUIPMENT:
         return ((Equipment) object).getRowCreatedTimestamp();
+      case GrocyApi.ENTITY.RECEIPTS:
+        return ((Receipt) object).getRowCreatedTimestamp();
       default:
         return null;
     }

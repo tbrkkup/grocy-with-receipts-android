@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of Grocy Android.
+  ~
+  ~ Grocy Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Grocy Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Grocy Android. If not, see http://www.gnu.org/licenses/.
+  ~
+  ~ Copyright (c) 2020-2024 by Patrick Zedler and Dominic Zedler
+  ~ Copyright (c) 2024-2026 by Patrick Zedler
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="?attr/colorSurface">
+
+  <com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/app_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.appbar.MaterialToolbar
+      android:id="@+id/toolbar"
+      style="@style/Widget.Grocy.Toolbar.Back"
+      app:title="@string/property_receipt" />
+
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <xyz.zedler.patrick.grocy.view.swiperefreshlayout.CustomSwipeRefreshLayout
+    android:id="@+id/swipe"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:overScrollMode="never">
+
+    <androidx.core.widget.NestedScrollView
+      android:id="@+id/scroll"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:overScrollMode="ifContentScrolls">
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="@dimen/global_scroll_bottom_padding">
+
+        <LinearLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintWidth_max="@dimen/max_content_width"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent">
+
+          <LinearLayout
+            style="@style/Widget.Grocy.LinearLayout.ListItem"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp">
+
+            <ImageView
+              style="@style/Widget.Grocy.ImageView.ListItem.Icon.Top"
+              android:src="@drawable/ic_round_store"
+              android:layout_marginTop="16dp"
+              tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+              android:id="@+id/text_input_store"
+              style="@style/Widget.Grocy.TextInputLayout.FilledBox"
+              android:hint="@string/property_store">
+
+              <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_store"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"
+                android:cursorVisible="false"
+                android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          </LinearLayout>
+
+          <LinearLayout
+            style="@style/Widget.Grocy.LinearLayout.ListItem"
+            android:paddingTop="4dp"
+            android:paddingBottom="0dp">
+
+            <ImageView
+              style="@style/Widget.Grocy.ImageView.ListItem.Icon.Top"
+              android:src="@drawable/ic_round_event"
+              android:layout_marginTop="16dp"
+              tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+              android:id="@+id/text_input_date"
+              style="@style/Widget.Grocy.TextInputLayout.FilledBox"
+              android:hint="@string/property_date">
+
+              <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"
+                android:cursorVisible="false"
+                android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          </LinearLayout>
+
+          <LinearLayout
+            style="@style/Widget.Grocy.LinearLayout.ListItem"
+            android:paddingTop="4dp"
+            android:paddingBottom="0dp">
+
+            <ImageView
+              style="@style/Widget.Grocy.ImageView.ListItem.Icon.Top"
+              android:src="@drawable/ic_round_label_anim"
+              android:layout_marginTop="16dp"
+              tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+              android:id="@+id/text_input_status"
+              style="@style/Widget.Grocy.TextInputLayout.FilledBox"
+              android:hint="@string/property_status">
+
+              <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"
+                android:cursorVisible="false"
+                android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          </LinearLayout>
+
+          <LinearLayout
+            style="@style/Widget.Grocy.LinearLayout.ListItem"
+            android:paddingTop="4dp"
+            android:paddingBottom="0dp">
+
+            <ImageView
+              android:id="@+id/image_description"
+              style="@style/Widget.Grocy.ImageView.ListItem.Icon.Top"
+              android:src="@drawable/ic_round_subject_anim"
+              android:layout_marginTop="16dp"
+              tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+              android:id="@+id/text_input_description"
+              style="@style/Widget.Grocy.TextInputLayout.FilledBox"
+              android:hint="@string/property_description">
+
+              <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text|textCapSentences|textMultiLine" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          </LinearLayout>
+
+        </LinearLayout>
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+  </xyz.zedler.patrick.grocy.view.swiperefreshlayout.CustomSwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
