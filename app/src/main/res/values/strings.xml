@@ -59,6 +59,7 @@
 
   <string name="action_back">Back</string>
   <string name="action_search">Search</string>
+  <string name="action_select">Select</string>
   <!-- This string is visible after clicking long on an arrow button in the FeatureActivity -->
   <string name="action_next">Next</string>
   <string name="action_new">New</string>
@@ -316,6 +317,8 @@
   <string name="msg_master_delete_product">Are you sure to delete product \"%1$s\"?\n\nThis also removes any stock amount, the journal and all other references of this product - consider disabling it instead, if you want to keep that and just hide the product.</string>
   <!-- %1$s is a master data type like "location" or "product" -->
   <string name="msg_master_delete_usage">This %1$s is still in use</string>
+  <!-- %1$d is the number of selected items -->
+  <string name="msg_bulk_delete_confirm">Are you sure to delete %1$d selected items?</string>
   <!-- %1$s is an amount and %2$s is a quantity unit.  -->
   <plurals name="msg_inventory_transaction_add">
     <item quantity="one">%1$s %2$s will be added to stock.</item>

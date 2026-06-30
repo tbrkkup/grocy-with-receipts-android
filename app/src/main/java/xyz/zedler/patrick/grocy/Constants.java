@@ -499,6 +499,7 @@ public final class Constants {
       public final static String SAVE_NOT_CLOSE = "save_not_close";
       public final static String DONE = "done";
       public final static String PREPARATION = "preparation";
+      public final static String DELETE = "delete";
     }
   }
 

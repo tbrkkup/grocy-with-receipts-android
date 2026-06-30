@@ -32,6 +32,9 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
 import xyz.zedler.patrick.grocy.Constants;
@@ -277,6 +280,25 @@ public class MasterObjectListViewModel extends BaseViewModel {
     dlHelper.delete(
         grocyApi.getObject(entity, objectId),
         response -> downloadData(false),
+        error -> showMessage(getString(R.string.error_undefined))
+    );
+  }
+
+  public void bulkDeleteObjects(List<Integer> objectIds, Runnable onSuccess) {
+    JSONObject body = new JSONObject();
+    try {
+      body.put("object_ids", new JSONArray(objectIds));
+    } catch (JSONException e) {
+      showMessage(getString(R.string.error_undefined));
+      return;
+    }
+    dlHelper.deleteJson(
+        grocyApi.getObjectsBulk(entity),
+        body,
+        response -> {
+          downloadData(false);
+          onSuccess.run();
+        },
         error -> showMessage(getString(R.string.error_undefined))
     );
   }

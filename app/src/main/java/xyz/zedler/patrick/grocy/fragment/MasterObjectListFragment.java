@@ -29,11 +29,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import xyz.zedler.patrick.grocy.Constants;
 import xyz.zedler.patrick.grocy.Constants.ACTION;
 import xyz.zedler.patrick.grocy.R;
@@ -71,6 +73,7 @@ public class MasterObjectListFragment extends BaseFragment
   private InfoFullscreenHelper infoFullscreenHelper;
   private FragmentMasterObjectListBinding binding;
   private MasterObjectListViewModel viewModel;
+  private MasterObjectListAdapter adapter;
 
   private String entity;
 
@@ -150,7 +153,7 @@ public class MasterObjectListFragment extends BaseFragment
     binding.recycler.setLayoutManager(
         new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
     );
-    MasterObjectListAdapter adapter = new MasterObjectListAdapter(
+    adapter = new MasterObjectListAdapter(
         requireContext(),
         entity,
         this
@@ -217,7 +220,13 @@ public class MasterObjectListFragment extends BaseFragment
 
     // INITIALIZE VIEWS
 
-    binding.toolbarDefault.setNavigationOnClickListener(v -> activity.performOnBackPressed());
+    binding.toolbarDefault.setNavigationOnClickListener(v -> {
+      if (adapter.isInSelectionMode()) {
+        exitSelectionMode();
+      } else {
+        activity.performOnBackPressed();
+      }
+    });
     binding.searchClose.setOnClickListener(v -> dismissSearch());
     binding.editTextSearch.addTextChangedListener(new TextWatcher() {
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -276,6 +285,10 @@ public class MasterObjectListFragment extends BaseFragment
         R.menu.menu_master_items,
         getBottomMenuClickListener()
     );
+    setUpNormalFab();
+  }
+
+  private void setUpNormalFab() {
     activity.updateFab(
         R.drawable.ic_round_add_anim,
         R.string.action_add,
@@ -316,15 +329,65 @@ public class MasterObjectListFragment extends BaseFragment
     );
   }
 
+  private void setUpSelectionFab() {
+    activity.updateFab(
+        R.drawable.ic_round_delete_anim,
+        R.string.action_delete,
+        Constants.FAB.TAG.DELETE,
+        true,
+        this::showBulkDeleteConfirmationDialog
+    );
+  }
+
+  private void showBulkDeleteConfirmationDialog() {
+    ArrayList<Integer> selectedIds = adapter.getSelectedIds();
+    if (selectedIds.isEmpty()) {
+      return;
+    }
+    new MaterialAlertDialogBuilder(
+        activity, R.style.ThemeOverlay_Grocy_AlertDialog_Caution
+    ).setTitle(R.string.title_confirmation)
+        .setMessage(getString(R.string.msg_bulk_delete_confirm, selectedIds.size()))
+        .setPositiveButton(R.string.action_delete, (dialog, which) ->
+            viewModel.bulkDeleteObjects(selectedIds, this::exitSelectionMode)
+        ).setNegativeButton(R.string.action_cancel, null)
+        .show();
+  }
+
+  private void exitSelectionMode() {
+    adapter.exitSelectionMode();
+    setUpNormalFab();
+  }
+
   public Toolbar.OnMenuItemClickListener getBottomMenuClickListener() {
     return item -> {
       if (item.getItemId() == R.id.action_search) {
         ViewUtil.startIcon(item);
         setUpSearch();
         return true;
+      } else if (item.getItemId() == R.id.action_select) {
+        adapter.enterSelectionMode();
+        onSelectionModeChanged(true);
+        return true;
       }
       return false;
     };
+  }
+
+  @Override
+  public void onSelectionModeChanged(boolean active) {
+    if (active) {
+      setUpSelectionFab();
+    } else {
+      setUpNormalFab();
+    }
+  }
+
+  @Override
+  public void onSelectionChanged(int selectedCount) {
+    if (selectedCount > 0) {
+      setUpSelectionFab();
+    }
   }
 
   @Override

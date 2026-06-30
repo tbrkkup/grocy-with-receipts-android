@@ -365,6 +365,28 @@ public class DownloadHelper {
     requestQueue.add(request);
   }
 
+  public void deleteJson(
+      String url,
+      JSONObject json,
+      OnJSONResponseListener onResponse,
+      OnErrorListener onError
+  ) {
+    String sessionKey = sharedPrefs
+        .getString(Constants.PREF.HOME_ASSISTANT_INGRESS_SESSION_KEY, null);
+    CustomJsonObjectRequest request = new CustomJsonObjectRequest(
+        Request.Method.DELETE,
+        url,
+        apiKey,
+        sessionKey,
+        json,
+        onResponse::onResponse,
+        onError::onError,
+        timeoutSeconds,
+        uuidHelper
+    );
+    requestQueue.add(request);
+  }
+
   public void delete(
       String url,
       String tag,

@@ -31,6 +31,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.load.model.LazyHeaders;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import xyz.zedler.patrick.grocy.api.GrocyApi;
 import xyz.zedler.patrick.grocy.databinding.RowMasterItemBinding;
 import xyz.zedler.patrick.grocy.model.Product;
@@ -49,6 +51,8 @@ public class MasterObjectListAdapter extends
   private final GrocyApi grocyApi;
   private final LazyHeaders grocyAuthHeaders;
   private boolean containsPictures;
+  private boolean selectionMode;
+  private final Set<Integer> selectedIds = new HashSet<>();
 
   public MasterObjectListAdapter(
       Context context,
@@ -113,10 +117,58 @@ public class MasterObjectListAdapter extends
       holder.binding.picturePlaceholder.setVisibility(View.GONE);
     }
 
+    // SELECTION
+    int objectId = ObjectUtil.getObjectId(object, entity);
+    holder.binding.checkboxSelect.setVisibility(selectionMode ? View.VISIBLE : View.GONE);
+    holder.binding.checkboxSelect.setChecked(selectedIds.contains(objectId));
+
     // CONTAINER
-    holder.binding.linearMasterItemContainer.setOnClickListener(
-        view -> listener.onItemRowClicked(object)
-    );
+    holder.binding.linearMasterItemContainer.setOnClickListener(view -> {
+      if (selectionMode) {
+        toggleSelection(objectId);
+      } else {
+        listener.onItemRowClicked(object);
+      }
+    });
+    holder.binding.linearMasterItemContainer.setOnLongClickListener(view -> {
+      if (!selectionMode) {
+        selectionMode = true;
+        listener.onSelectionModeChanged(true);
+      }
+      toggleSelection(objectId);
+      return true;
+    });
+  }
+
+  private void toggleSelection(int objectId) {
+    if (!selectedIds.add(objectId)) {
+      selectedIds.remove(objectId);
+    }
+    if (selectionMode && selectedIds.isEmpty()) {
+      selectionMode = false;
+      listener.onSelectionModeChanged(false);
+    }
+    listener.onSelectionChanged(selectedIds.size());
+    notifyDataSetChanged();
+  }
+
+  public void enterSelectionMode() {
+    selectionMode = true;
+    notifyDataSetChanged();
+  }
+
+  public void exitSelectionMode() {
+    selectionMode = false;
+    selectedIds.clear();
+    notifyDataSetChanged();
+  }
+
+  public ArrayList<Integer> getSelectedIds() {
+    return new ArrayList<>(selectedIds);
+  }
+
+  public boolean isInSelectionMode() {
+    return selectionMode;
   }
 
   public void updateData(ArrayList<Object> newObjects, Runnable onListFilled) {
@@ -199,5 +251,9 @@ public class MasterObjectListAdapter extends
   public interface MasterObjectListAdapterListener {
 
     void onItemRowClicked(Object object);
+
+    void onSelectionModeChanged(boolean active);
+
+    void onSelectionChanged(int selectedCount);
   }
 }

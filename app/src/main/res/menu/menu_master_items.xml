@@ -30,4 +30,9 @@
     android:icon="@drawable/ic_round_search_anim"
     app:showAsAction="always" />
 
+  <item
+    android:id="@+id/action_select"
+    android:title="@string/action_select"
+    app:showAsAction="never" />
+
 </menu>

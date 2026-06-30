@@ -196,6 +196,13 @@ public class GrocyApi {
     return getUrl("/objects/" + entity + "/" + id);
   }
 
+  /**
+   * Bulk-edits or bulk-deletes objects of the given entity
+   */
+  public String getObjectsBulk(String entity) {
+    return getUrl("/objects/" + entity + "/bulk");
+  }
+
   // SYSTEM
 
   /**
