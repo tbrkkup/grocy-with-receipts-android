@@ -319,6 +319,7 @@
   <string name="msg_master_delete_usage">This %1$s is still in use</string>
   <!-- %1$d is the number of selected items -->
   <string name="msg_bulk_delete_confirm">Are you sure to delete %1$d selected items?</string>
+  <string name="title_bulk_edit">Bulk edit</string>
   <!-- %1$s is an amount and %2$s is a quantity unit.  -->
   <plurals name="msg_inventory_transaction_add">
     <item quantity="one">%1$s %2$s will be added to stock.</item>

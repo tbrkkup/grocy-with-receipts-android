@@ -500,6 +500,7 @@ public final class Constants {
       public final static String DONE = "done";
       public final static String PREPARATION = "preparation";
       public final static String DELETE = "delete";
+      public final static String EDIT = "edit";
     }
   }
 

@@ -85,6 +85,8 @@ public class MasterObjectListViewModel extends BaseViewModel {
   private List<?> objects;
   private List<QuantityUnit> quantityUnits;
   private List<Location> locations;
+  private List<Store> stores;
+  private List<ProductGroup> productGroups;
   private HashMap<String, Userfield> userfieldHashMap = new HashMap<>();
 
   private String search;
@@ -128,6 +130,8 @@ public class MasterObjectListViewModel extends BaseViewModel {
           filterChipLiveDataProductGroup.setProductGroups(data.getProductGroups());
           this.quantityUnits = data.getQuantityUnits();
           this.locations = data.getLocations();
+          this.stores = data.getStores();
+          this.productGroups = data.getProductGroups();
           break;
         case ENTITY.PRODUCT_GROUPS:
           this.objects = data.getProductGroups();
@@ -165,7 +169,8 @@ public class MasterObjectListViewModel extends BaseViewModel {
         }, error -> onError(error, TAG),
         forceUpdate,
         true,
-        entity.equals(GrocyApi.ENTITY.STORES) ? Store.class : null,
+        (entity.equals(GrocyApi.ENTITY.STORES) || entity.equals(GrocyApi.ENTITY.PRODUCTS))
+            ? Store.class : null,
         (entity.equals(GrocyApi.ENTITY.LOCATIONS) || entity.equals(GrocyApi.ENTITY.PRODUCTS))
             ? Location.class : null,
         (entity.equals(GrocyApi.ENTITY.PRODUCT_GROUPS) || entity.equals(GrocyApi.ENTITY.PRODUCTS))
@@ -301,6 +306,40 @@ public class MasterObjectListViewModel extends BaseViewModel {
         },
         error -> showMessage(getString(R.string.error_undefined))
     );
+  }
+
+  public void bulkEditProducts(List<Integer> objectIds, String field, Object value, Runnable onSuccess) {
+    JSONObject data = new JSONObject();
+    JSONObject body = new JSONObject();
+    try {
+      data.put(field, value);
+      body.put("object_ids", new JSONArray(objectIds));
+      body.put("data", data);
+    } catch (JSONException e) {
+      showMessage(getString(R.string.error_undefined));
+      return;
+    }
+    dlHelper.put(
+        grocyApi.getObjectsBulk(entity),
+        body,
+        response -> {
+          downloadData(false);
+          onSuccess.run();
+        },
+        error -> showMessage(getString(R.string.error_undefined))
+    );
+  }
+
+  public List<Location> getLocationsForBulkEdit() {
+    return locations;
+  }
+
+  public List<Store> getStoresForBulkEdit() {
+    return stores;
+  }
+
+  public List<ProductGroup> getProductGroupsForBulkEdit() {
+    return productGroups;
   }
 
   public boolean isSearchActive() {

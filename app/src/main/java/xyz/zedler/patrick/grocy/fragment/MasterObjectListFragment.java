@@ -22,14 +22,20 @@ package xyz.zedler.patrick.grocy.fragment;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntConsumer;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -330,13 +336,133 @@ public class MasterObjectListFragment extends BaseFragment
   }
 
   private void setUpSelectionFab() {
-    activity.updateFab(
-        R.drawable.ic_round_delete_anim,
-        R.string.action_delete,
-        Constants.FAB.TAG.DELETE,
-        true,
-        this::showBulkDeleteConfirmationDialog
-    );
+    if (entity.equals(GrocyApi.ENTITY.PRODUCTS)) {
+      activity.updateFab(
+          R.drawable.ic_round_edit,
+          R.string.title_bulk_edit,
+          Constants.FAB.TAG.EDIT,
+          true,
+          this::showBulkEditChooserDialog
+      );
+    } else {
+      activity.updateFab(
+          R.drawable.ic_round_delete_anim,
+          R.string.action_delete,
+          Constants.FAB.TAG.DELETE,
+          true,
+          this::showBulkDeleteConfirmationDialog
+      );
+    }
+  }
+
+  private void showBulkEditChooserDialog() {
+    ArrayList<Integer> selectedIds = adapter.getSelectedIds();
+    if (selectedIds.isEmpty()) {
+      return;
+    }
+    String[] items = new String[]{
+        getString(R.string.property_location),
+        getString(R.string.property_store),
+        getString(R.string.property_product_group),
+        getString(R.string.property_amount_min_stock),
+        getString(R.string.property_due_days_default),
+        getString(R.string.action_delete)
+    };
+    new MaterialAlertDialogBuilder(activity)
+        .setTitle(R.string.title_bulk_edit)
+        .setItems(items, (dialog, which) -> {
+          switch (which) {
+            case 0:
+              showSelectionListDialog(
+                  R.string.property_location,
+                  viewModel.getLocationsForBulkEdit(),
+                  Location::getName,
+                  location -> viewModel.bulkEditProducts(
+                      selectedIds, "location_id", location.getId(), this::exitSelectionMode
+                  )
+              );
+              break;
+            case 1:
+              showSelectionListDialog(
+                  R.string.property_store,
+                  viewModel.getStoresForBulkEdit(),
+                  Store::getName,
+                  store -> viewModel.bulkEditProducts(
+                      selectedIds, "shopping_location_id", store.getId(), this::exitSelectionMode
+                  )
+              );
+              break;
+            case 2:
+              showSelectionListDialog(
+                  R.string.property_product_group,
+                  viewModel.getProductGroupsForBulkEdit(),
+                  ProductGroup::getName,
+                  productGroup -> viewModel.bulkEditProducts(
+                      selectedIds, "product_group_id", productGroup.getId(), this::exitSelectionMode
+                  )
+              );
+              break;
+            case 3:
+              showNumberInputDialog(
+                  R.string.property_amount_min_stock,
+                  value -> viewModel.bulkEditProducts(
+                      selectedIds, "min_stock_amount", value, this::exitSelectionMode
+                  )
+              );
+              break;
+            case 4:
+              showNumberInputDialog(
+                  R.string.property_due_days_default,
+                  value -> viewModel.bulkEditProducts(
+                      selectedIds, "default_best_before_days", value, this::exitSelectionMode
+                  )
+              );
+              break;
+            case 5:
+              showBulkDeleteConfirmationDialog();
+              break;
+          }
+        })
+        .setNegativeButton(R.string.action_cancel, null)
+        .show();
+  }
+
+  private <T> void showSelectionListDialog(
+      int titleResId,
+      List<T> options,
+      Function<T, String> nameProvider,
+      Consumer<T> onSelected
+  ) {
+    if (options == null || options.isEmpty()) {
+      return;
+    }
+    String[] names = new String[options.size()];
+    for (int i = 0; i < options.size(); i++) {
+      names[i] = nameProvider.apply(options.get(i));
+    }
+    new MaterialAlertDialogBuilder(activity)
+        .setTitle(titleResId)
+        .setItems(names, (dialog, which) -> onSelected.accept(options.get(which)))
+        .setNegativeButton(R.string.action_cancel, null)
+        .show();
+  }
+
+  private void showNumberInputDialog(int titleResId, IntConsumer onConfirmed) {
+    EditText input = new EditText(activity);
+    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+    int padding = (int) (16 * getResources().getDisplayMetrics().density);
+    input.setPadding(padding, padding, padding, padding);
+    new MaterialAlertDialogBuilder(activity)
+        .setTitle(titleResId)
+        .setView(input)
+        .setPositiveButton(R.string.action_save, (dialog, which) -> {
+          String text = input.getText().toString();
+          if (!text.isEmpty()) {
+            onConfirmed.accept(Integer.parseInt(text));
+          }
+        })
+        .setNegativeButton(R.string.action_cancel, null)
+        .show();
   }
 
   private void showBulkDeleteConfirmationDialog() {
