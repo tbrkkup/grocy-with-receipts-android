@@ -21,12 +21,21 @@
 package xyz.zedler.patrick.grocy.fragment;
 
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -36,8 +45,12 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 import xyz.zedler.patrick.grocy.Constants;
@@ -49,6 +62,7 @@ import xyz.zedler.patrick.grocy.behavior.SystemBarBehavior;
 import xyz.zedler.patrick.grocy.databinding.FragmentMasterReceiptBinding;
 import xyz.zedler.patrick.grocy.helper.DownloadHelper;
 import xyz.zedler.patrick.grocy.model.Receipt;
+import xyz.zedler.patrick.grocy.model.ReceiptFile;
 import xyz.zedler.patrick.grocy.model.Store;
 import xyz.zedler.patrick.grocy.util.DateUtil;
 import xyz.zedler.patrick.grocy.util.PrefsUtil;
@@ -68,6 +82,8 @@ public class MasterReceiptFragment extends BaseFragment {
   private String selectedStoreId;
   private String selectedDate;
   private String selectedStatus;
+
+  private ActivityResultLauncher<String> filePickerLauncher;
 
   private boolean debug;
 
@@ -124,10 +140,26 @@ public class MasterReceiptFragment extends BaseFragment {
     binding.editTextDate.setOnClickListener(v -> showDatePicker());
     binding.editTextStatus.setOnClickListener(v -> showStatusDialog());
 
+    filePickerLauncher = registerForActivityResult(
+        new ActivityResultContracts.GetContent(),
+        uri -> {
+          if (uri != null) {
+            uploadFile(uri);
+          }
+        }
+    );
+
+    // Files can only be attached once the receipt exists (needs its id)
+    binding.linearFilesSection.setVisibility(editReceipt != null ? View.VISIBLE : View.GONE);
+    binding.buttonAddFile.setOnClickListener(v -> filePickerLauncher.launch("*/*"));
+
     fillForm();
 
     if (savedInstanceState == null) {
       download();
+      if (editReceipt != null) {
+        loadReceiptFiles();
+      }
     }
 
     activity.getScrollBehavior().setNestedOverScrollFixEnabled(true);
@@ -328,6 +360,169 @@ public class MasterReceiptFragment extends BaseFragment {
         })
         .setNegativeButton(R.string.action_cancel, (dialog, which) -> performHapticClick())
         .show();
+  }
+
+  private void loadReceiptFiles() {
+    if (editReceipt == null) {
+      return;
+    }
+    dlHelper.get(
+        grocyApi.getObjectsEqualValue(
+            ENTITY.RECEIPT_FILES, "receipt_id", String.valueOf(editReceipt.getId())
+        ),
+        response -> {
+          List<ReceiptFile> files = gson.fromJson(
+              response, new TypeToken<ArrayList<ReceiptFile>>() {
+              }.getType()
+          );
+          renderReceiptFiles(files);
+        },
+        this::showErrorMessage
+    );
+  }
+
+  private void renderReceiptFiles(List<ReceiptFile> files) {
+    if (binding == null) {
+      return;
+    }
+    binding.containerFiles.removeAllViews();
+    if (files == null) {
+      return;
+    }
+    LayoutInflater inflater = LayoutInflater.from(activity);
+    for (ReceiptFile file : files) {
+      View row = inflater.inflate(R.layout.row_receipt_file, binding.containerFiles, false);
+      TextView name = row.findViewById(R.id.text_file_name);
+      ImageView delete = row.findViewById(R.id.button_delete_file);
+      name.setText(file.getFileName());
+      delete.setOnClickListener(v -> showDeleteFileConfirmationDialog(file));
+      binding.containerFiles.addView(row);
+    }
+  }
+
+  private void uploadFile(Uri uri) {
+    if (editReceipt == null) {
+      return;
+    }
+    binding.swipe.setRefreshing(true);
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.execute(() -> {
+      byte[] bytes = readBytes(uri);
+      String extension = getExtension(uri);
+      new Handler(Looper.getMainLooper()).post(() -> {
+        if (binding == null) {
+          executor.shutdown();
+          return;
+        }
+        if (bytes == null) {
+          binding.swipe.setRefreshing(false);
+          activity.showSnackbar(getString(R.string.error_undefined), false);
+        } else {
+          String fileName = System.currentTimeMillis() + extension;
+          putReceiptFile(fileName, bytes);
+        }
+        executor.shutdown();
+      });
+    });
+  }
+
+  private void putReceiptFile(String fileName, byte[] bytes) {
+    dlHelper.putFile(
+        grocyApi.getReceiptFile(fileName),
+        bytes,
+        () -> linkReceiptFile(fileName),
+        error -> {
+          binding.swipe.setRefreshing(false);
+          showErrorMessage(error);
+        }
+    );
+  }
+
+  private void linkReceiptFile(String fileName) {
+    JSONObject jsonObject = new JSONObject();
+    try {
+      jsonObject.put("receipt_id", editReceipt.getId());
+      jsonObject.put("file_name", fileName);
+    } catch (JSONException e) {
+      if (debug) {
+        Log.e(TAG, "linkReceiptFile: " + e);
+      }
+    }
+    dlHelper.post(
+        grocyApi.getObjects(ENTITY.RECEIPT_FILES),
+        jsonObject,
+        response -> {
+          binding.swipe.setRefreshing(false);
+          loadReceiptFiles();
+        },
+        error -> {
+          binding.swipe.setRefreshing(false);
+          showErrorMessage(error);
+        }
+    );
+  }
+
+  private void showDeleteFileConfirmationDialog(ReceiptFile file) {
+    new MaterialAlertDialogBuilder(
+        activity, R.style.ThemeOverlay_Grocy_AlertDialog_Caution
+    ).setTitle(R.string.title_confirmation)
+        .setMessage(R.string.msg_receipt_file_delete)
+        .setPositiveButton(R.string.action_delete, (dialog, which) -> {
+          performHapticClick();
+          deleteReceiptFile(file);
+        })
+        .setNegativeButton(R.string.action_cancel, (dialog, which) -> performHapticClick())
+        .show();
+  }
+
+  private void deleteReceiptFile(ReceiptFile file) {
+    binding.swipe.setRefreshing(true);
+    dlHelper.delete(
+        grocyApi.getObject(ENTITY.RECEIPT_FILES, file.getId()),
+        response -> {
+          // Best-effort removal of the stored file; the metadata row is the source of truth
+          dlHelper.delete(
+              grocyApi.getReceiptFile(file.getFileName()),
+              response2 -> {},
+              error2 -> {}
+          );
+          binding.swipe.setRefreshing(false);
+          loadReceiptFiles();
+        },
+        error -> {
+          binding.swipe.setRefreshing(false);
+          showErrorMessage(error);
+        }
+    );
+  }
+
+  @Nullable
+  private byte[] readBytes(Uri uri) {
+    try (InputStream inputStream = activity.getContentResolver().openInputStream(uri)) {
+      if (inputStream == null) {
+        return null;
+      }
+      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+      byte[] chunk = new byte[8192];
+      int read;
+      while ((read = inputStream.read(chunk)) != -1) {
+        buffer.write(chunk, 0, read);
+      }
+      return buffer.toByteArray();
+    } catch (Exception e) {
+      if (debug) {
+        Log.e(TAG, "readBytes: " + e);
+      }
+      return null;
+    }
+  }
+
+  private String getExtension(Uri uri) {
+    String type = activity.getContentResolver().getType(uri);
+    String extension = type != null
+        ? MimeTypeMap.getSingleton().getExtensionFromMimeType(type)
+        : null;
+    return extension != null ? "." + extension : "";
   }
 
   public Toolbar.OnMenuItemClickListener getBottomMenuClickListener() {

@@ -181,6 +181,45 @@
 
           </LinearLayout>
 
+          <LinearLayout
+            android:id="@+id/linear_files_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+              style="@style/Widget.Grocy.TextView.ListItem.OverLine"
+              android:layout_marginStart="16dp"
+              android:layout_marginTop="8dp"
+              android:text="@string/property_files" />
+
+            <LinearLayout
+              android:id="@+id/container_files"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical" />
+
+            <LinearLayout
+              android:id="@+id/button_add_file"
+              style="@style/Widget.Grocy.LinearLayout.ListItem.SingleLine.Clickable"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+              <ImageView
+                style="@style/Widget.Grocy.ImageView.ListItem.Icon"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_round_add_anim"
+                tools:ignore="ContentDescription" />
+
+              <TextView
+                style="@style/Widget.Grocy.TextView.ListItem.Title"
+                android:text="@string/action_add_file" />
+
+            </LinearLayout>
+
+          </LinearLayout>
+
         </LinearLayout>
 
       </androidx.constraintlayout.widget.ConstraintLayout>

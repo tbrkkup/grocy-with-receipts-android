@@ -514,6 +514,9 @@
   <string name="error_empty_equipment">No equipment</string>
   <string name="error_empty_receipts">No receipts</string>
   <string name="msg_receipt_delete">Do you really want to delete this receipt?</string>
+  <string name="msg_receipt_file_delete">Do you really want to delete this file?</string>
+  <string name="property_files">Files</string>
+  <string name="action_add_file">Add file</string>
   <string name="error_empty_unit_conversions">No quantity unit conversions</string>
   <string name="error_empty_chores">No chores</string>
   <string name="error_empty_chores_sub">Go to master data and create some</string>
