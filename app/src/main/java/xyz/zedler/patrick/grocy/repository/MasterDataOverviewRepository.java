@@ -31,6 +31,7 @@ import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
 import xyz.zedler.patrick.grocy.model.QuantityUnit;
+import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.model.Store;
 import xyz.zedler.patrick.grocy.model.TaskCategory;
 
@@ -54,6 +55,7 @@ public class MasterDataOverviewRepository {
     private final List<QuantityUnit> quantityUnits;
     private final List<Product> products;
     private final List<TaskCategory> taskCategories;
+    private final List<Equipment> equipment;
 
     public MasterDataOverviewData(
         List<Store> stores,
@@ -61,7 +63,8 @@ public class MasterDataOverviewRepository {
         List<ProductGroup> productGroups,
         List<QuantityUnit> quantityUnits,
         List<Product> products,
-        List<TaskCategory> taskCategories
+        List<TaskCategory> taskCategories,
+        List<Equipment> equipment
     ) {
       this.stores = stores;
       this.locations = locations;
@@ -69,6 +72,7 @@ public class MasterDataOverviewRepository {
       this.quantityUnits = quantityUnits;
       this.products = products;
       this.taskCategories = taskCategories;
+      this.equipment = equipment;
     }
 
     public List<Store> getStores() {
@@ -94,6 +98,10 @@ public class MasterDataOverviewRepository {
     public List<TaskCategory> getTaskCategories() {
       return taskCategories;
     }
+
+    public List<Equipment> getEquipment() {
+      return equipment;
+    }
   }
 
   public void loadFromDatabase(DataListener onSuccess, Consumer<Throwable> onError) {
@@ -105,6 +113,7 @@ public class MasterDataOverviewRepository {
             appDatabase.quantityUnitDao().getQuantityUnits(),
             appDatabase.productDao().getProducts(),
             appDatabase.taskCategoryDao().getTaskCategories(),
+            appDatabase.equipmentDao().getEquipment(),
             MasterDataOverviewData::new
         )
         .subscribeOn(Schedulers.io())
