@@ -66,6 +66,7 @@ public class GrocyApi {
     public final static String CHORES = "chores";
     public final static String USERFIELDS = "userfields";
     public final static String EQUIPMENT = "equipment";
+    public final static String PRODUCTS_PRICE_HISTORY = "products_price_history";
   }
 
   public final static class COMPARISON_OPERATOR {
@@ -522,6 +523,18 @@ public class GrocyApi {
   public String getProductPictureServeLarge(String filename) {
     return getProductPicture(filename)
         + "?force_serve_as=picture&best_fit_height=800&best_fit_width=1280";
+  }
+
+  public String getProductsPriceHistory(String startDate, String endDate) {
+    StringBuilder url = new StringBuilder(getObjects(ENTITY.PRODUCTS_PRICE_HISTORY));
+    url.append("?query%5B%5D=transaction_type%21%3Dself-production");
+    if (startDate != null && !startDate.isEmpty()) {
+      url.append("&query%5B%5D=purchased_date%3E%3D").append(startDate);
+    }
+    if (endDate != null && !endDate.isEmpty()) {
+      url.append("&query%5B%5D=purchased_date%3C%3D").append(endDate);
+    }
+    return url.toString();
   }
 
   public String getEquipmentManual(String filename) {

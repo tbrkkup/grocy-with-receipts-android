@@ -18,34 +18,27 @@
   ~ Copyright (c) 2024-2026 by Patrick Zedler
   -->
 
-<menu
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  tools:ignore="AlwaysShowAction">
+  style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
 
-  <item
-    android:id="@+id/action_search"
-    android:title="@string/action_search"
-    android:icon="@drawable/ic_round_search_anim"
-    app:showAsAction="always" />
+  <ImageView
+    style="@style/Widget.Grocy.ImageView.ListItem.Icon"
+    android:importantForAccessibility="no"
+    android:src="@drawable/ic_round_cash_multiple" />
 
-  <item
-    android:id="@+id/action_stock_journal"
-    android:title="@string/title_stock_journal"
-    android:icon="@drawable/ic_round_history_anim"
-    app:showAsAction="always" />
+  <LinearLayout style="@style/Widget.Grocy.LinearLayout.ListItem.TextBox.Stretch">
 
-  <item
-    android:id="@+id/action_stock_entries"
-    android:title="@string/title_stock_entries"
-    android:icon="@drawable/ic_round_format_list_numbered"
-    app:showAsAction="ifRoom" />
+    <TextView
+      android:id="@+id/text_name"
+      style="@style/Widget.Grocy.TextView.ListItem.Title" />
 
-  <item
-    android:id="@+id/action_stock_report_spendings"
-    android:title="@string/title_stock_report_spendings"
-    android:icon="@drawable/ic_round_cash_multiple"
-    app:showAsAction="ifRoom" />
+    <TextView
+      android:id="@+id/text_amount"
+      style="@style/Widget.Grocy.TextView.ListItem.Description" />
 
-</menu>
+  </LinearLayout>
+
+</LinearLayout>
