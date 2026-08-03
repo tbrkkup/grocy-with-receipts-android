@@ -525,9 +525,10 @@ public class GrocyApi {
         + "?force_serve_as=picture&best_fit_height=800&best_fit_width=1280";
   }
 
-  public String getProductsPriceHistory(String startDate, String endDate) {
-    StringBuilder url = new StringBuilder(getObjects(ENTITY.PRODUCTS_PRICE_HISTORY));
-    url.append("?query%5B%5D=transaction_type%21%3Dself-production");
+  public String getPurchaseStockLog(String startDate, String endDate) {
+    StringBuilder url = new StringBuilder(getUrl("/objects/stock_log"));
+    url.append("?query%5B%5D=transaction_type%3Dpurchase");
+    url.append("&query%5B%5D=undone%3D0");
     if (startDate != null && !startDate.isEmpty()) {
       url.append("&query%5B%5D=purchased_date%3E%3D").append(startDate);
     }

@@ -41,7 +41,7 @@ import xyz.zedler.patrick.grocy.helper.DownloadHelper;
 import xyz.zedler.patrick.grocy.model.InfoFullscreen;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
-import xyz.zedler.patrick.grocy.model.ProductsPriceHistory;
+import xyz.zedler.patrick.grocy.model.StockLogEntry;
 import xyz.zedler.patrick.grocy.model.Store;
 import xyz.zedler.patrick.grocy.web.NetworkQueue;
 
@@ -62,7 +62,7 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
   private final MutableLiveData<String> totalSpendLive;
   private final MutableLiveData<Integer> groupByLive;
 
-  private List<ProductsPriceHistory> priceHistory;
+  private List<StockLogEntry> purchaseEntries;
   private List<Product> products;
   private List<ProductGroup> productGroups;
   private List<Store> stores;
@@ -103,13 +103,13 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
     )
     .subscribeOn(Schedulers.io())
     .observeOn(AndroidSchedulers.mainThread())
-    .doOnSuccess(ok -> fetchPriceHistory(startDate, endDate))
+    .doOnSuccess(ok -> fetchPurchaseEntries(startDate, endDate))
     .doOnError(e -> onError(e, TAG))
     .onErrorComplete()
     .subscribe();
   }
 
-  private void fetchPriceHistory(String startDate, String endDate) {
+  private void fetchPurchaseEntries(String startDate, String endDate) {
     NetworkQueue queue = dlHelper.newQueue(
         updated -> {
           if (isOffline()) setOfflineLive(false);
@@ -117,9 +117,9 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
         },
         error -> onError(error, TAG)
     );
-    queue.append(ProductsPriceHistory.getPriceHistory(
+    queue.append(StockLogEntry.getPurchaseEntries(
         dlHelper, startDate, endDate,
-        items -> this.priceHistory = items,
+        items -> this.purchaseEntries = items,
         null
     ));
     queue.start();
@@ -130,14 +130,14 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
   }
 
   private void aggregateAndDisplay() {
-    if (priceHistory == null) return;
+    if (purchaseEntries == null) return;
     int groupBy = groupByLive.getValue() != null ? groupByLive.getValue() : GROUP_BY_PRODUCT;
 
     Map<String, Double> aggregated = new HashMap<>();
 
-    for (ProductsPriceHistory entry : priceHistory) {
+    for (StockLogEntry entry : purchaseEntries) {
       String key = resolveGroupKey(entry, groupBy);
-      double cost = entry.getTotalCost();
+      double cost = totalCost(entry);
       aggregated.put(key, aggregated.getOrDefault(key, 0.0) + cost);
     }
 
@@ -160,7 +160,19 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
     }
   }
 
-  private String resolveGroupKey(ProductsPriceHistory entry, int groupBy) {
+  private double totalCost(StockLogEntry entry) {
+    try {
+      String priceStr = entry.getPrice();
+      if (priceStr == null || priceStr.isEmpty()) return 0;
+      double amount = Double.parseDouble(entry.getAmount());
+      double price = Double.parseDouble(priceStr);
+      return Math.abs(amount) * price;
+    } catch (NumberFormatException e) {
+      return 0;
+    }
+  }
+
+  private String resolveGroupKey(StockLogEntry entry, int groupBy) {
     switch (groupBy) {
       case GROUP_BY_PRODUCT: {
         if (products == null) return String.valueOf(entry.getProductId());
@@ -185,13 +197,16 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
         return getString(R.string.subtitle_unknown);
       }
       case GROUP_BY_STORE: {
-        Integer locationId = entry.getShoppingLocationId();
-        if (locationId == null) return getString(R.string.subtitle_none);
-        if (stores == null) return String.valueOf(locationId);
-        for (Store s : stores) {
-          if (s.getId() == locationId) return s.getName();
-        }
-        return String.valueOf(locationId);
+        String locationId = entry.getShoppingLocationId();
+        if (locationId == null || locationId.isEmpty()) return getString(R.string.subtitle_none);
+        if (stores == null) return locationId;
+        try {
+          int lid = Integer.parseInt(locationId);
+          for (Store s : stores) {
+            if (s.getId() == lid) return s.getName();
+          }
+        } catch (NumberFormatException ignored) {}
+        return locationId;
       }
       default:
         return String.valueOf(entry.getProductId());
