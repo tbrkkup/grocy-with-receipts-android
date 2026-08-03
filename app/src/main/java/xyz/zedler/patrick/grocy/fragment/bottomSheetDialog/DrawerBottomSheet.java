@@ -272,6 +272,16 @@ public class DrawerBottomSheet extends BaseBottomSheetDialogFragment implements 
     } else if (id == R.id.linear_drawer_tasks) {
       navigateCustom(DrawerBottomSheetDirections
           .actionDrawerBottomSheetDialogFragmentToTasksFragment());
+    } else if (id == R.id.linear_drawer_equipment) {
+      android.os.Bundle equipmentArgs = new android.os.Bundle();
+      equipmentArgs.putString("entity", xyz.zedler.patrick.grocy.api.GrocyApi.ENTITY.EQUIPMENT);
+      NavOptions.Builder builder = new NavOptions.Builder();
+      builder.setPopUpTo(R.id.overviewStartFragment, false);
+      activity.navUtil.navigate(R.id.masterObjectListFragment, equipmentArgs);
+      dismiss();
+    } else if (id == R.id.linear_drawer_stock_report_spendings) {
+      navigateCustom(DrawerBottomSheetDirections
+          .actionDrawerBottomSheetDialogFragmentToStockReportSpendingsFragment());
     } else if (id == R.id.linear_drawer_master_data) {
       navigateCustom(DrawerBottomSheetDirections
           .actionDrawerBottomSheetDialogFragmentToNavigationMasterObjects());

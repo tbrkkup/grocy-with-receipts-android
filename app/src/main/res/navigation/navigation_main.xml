@@ -281,6 +281,12 @@
     <action
       android:id="@+id/action_drawerBottomSheetDialogFragment_to_mealPlanFragment"
       app:destination="@id/mealPlanFragment" />
+    <action
+      android:id="@+id/action_drawerBottomSheetDialogFragment_to_masterObjectListFragment_equipment"
+      app:destination="@id/masterObjectListFragment" />
+    <action
+      android:id="@+id/action_drawerBottomSheetDialogFragment_to_stockReportSpendingsFragment"
+      app:destination="@id/stockReportSpendingsFragment" />
   </dialog>
   <action
     android:id="@+id/action_global_drawerBottomSheetDialogFragment"
