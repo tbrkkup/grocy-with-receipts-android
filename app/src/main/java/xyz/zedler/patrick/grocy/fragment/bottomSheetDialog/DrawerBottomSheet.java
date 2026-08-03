@@ -279,9 +279,6 @@ public class DrawerBottomSheet extends BaseBottomSheetDialogFragment implements 
     } else if (id == R.id.linear_drawer_equipment) {
       activity.navUtil.navigateDeepLink(R.string.deep_link_equipmentListFragment);
       dismiss();
-    } else if (id == R.id.linear_drawer_stock_report_spendings) {
-      navigateCustom(DrawerBottomSheetDirections
-          .actionDrawerBottomSheetDialogFragmentToStockReportSpendingsFragment());
     } else if (id == R.id.linear_drawer_master_data) {
       navigateCustom(DrawerBottomSheetDirections
           .actionDrawerBottomSheetDialogFragmentToNavigationMasterObjects());

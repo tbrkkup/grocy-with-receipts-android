@@ -98,23 +98,6 @@
 
       </FrameLayout>
 
-      <LinearLayout
-        android:id="@+id/linear_drawer_stock_report_spendings"
-        style="@style/Widget.Grocy.LinearLayout.ListItem.SingleLine.Clickable">
-
-        <ImageView
-          android:id="@+id/image_drawer_stock_report_spendings"
-          style="@style/Widget.Grocy.ImageView.ListItem.Icon"
-          android:importantForAccessibility="no"
-          android:src="@drawable/ic_round_cash_multiple" />
-
-        <TextView
-          android:id="@+id/text_drawer_stock_report_spendings"
-          style="@style/Widget.Grocy.TextView.DrawerItem"
-          android:text="@string/title_stock_report_spendings" />
-
-      </LinearLayout>
-
       <FrameLayout
         android:id="@+id/frame_shopping_list"
         android:layout_width="match_parent"
