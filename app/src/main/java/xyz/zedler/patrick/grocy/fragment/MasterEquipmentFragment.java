@@ -60,6 +60,7 @@ import xyz.zedler.patrick.grocy.databinding.FragmentMasterEquipmentBinding;
 import xyz.zedler.patrick.grocy.helper.DownloadHelper;
 import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.util.PrefsUtil;
+import androidx.core.text.HtmlCompat;
 import xyz.zedler.patrick.grocy.util.ViewUtil;
 
 public class MasterEquipmentFragment extends BaseFragment {
@@ -287,7 +288,11 @@ public class MasterEquipmentFragment extends BaseFragment {
     clearInputFocusAndErrors();
     if (editEquipment == null) return;
     binding.editTextMasterEquipmentName.setText(editEquipment.getName());
-    binding.editTextMasterEquipmentDescription.setText(editEquipment.getDescription());
+    String rawDesc = editEquipment.getDescription();
+    if (rawDesc != null && rawDesc.contains("<")) {
+      rawDesc = HtmlCompat.fromHtml(rawDesc, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
+    }
+    binding.editTextMasterEquipmentDescription.setText(rawDesc);
     String manualFile = editEquipment.getInstructionManualFileName();
     if (manualFile != null && !manualFile.isBlank()) {
       binding.textManualFilename.setText(manualFile);
