@@ -1328,6 +1328,7 @@
   <string name="mtm_valid_for">Zertifikat gültig für:</string>
   <string name="mtm_decision_always">Immer</string>
   <string name="mtm_decision_once">Einmalig</string>
+  <string name="subtitle_others">Sonstige</string>
   <string name="title_stock_report_spendings">Ausgaben-Report</string>
   <string name="property_date_range">Zeitraum</string>
   <string name="date_range_this_month">Dieser Monat</string>

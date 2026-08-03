@@ -721,6 +721,7 @@
 
   <string name="subtitle_barcodes_will_be_added">There are stored barcodes, which are added to the product with the save operation.</string>
   <string name="subtitle_unknown">Unknown</string>
+  <string name="subtitle_others">Others</string>
   <!-- Like the word 'supported' from 'This version is supported.'-->
   <string name="subtitle_supported">Supported</string>
   <!-- Like the words 'not supported' from 'This version is not supported.'-->
