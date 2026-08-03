@@ -199,7 +199,7 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
   }
 
   public String formatCurrency(double amount) {
-    String currency = sharedPrefs.getString(PREF.CURRENCY, "");
+    String currency = getSharedPrefs().getString(PREF.CURRENCY, "");
     DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.getDefault()));
     return df.format(amount) + (currency.isEmpty() ? "" : " " + currency);
   }
