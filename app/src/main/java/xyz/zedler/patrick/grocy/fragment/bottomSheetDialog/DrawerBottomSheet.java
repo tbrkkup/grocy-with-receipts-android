@@ -116,6 +116,9 @@ public class DrawerBottomSheet extends BaseBottomSheetDialogFragment implements 
     binding.linearDrawerTasks.setBackground(
         ViewUtil.getRippleBgListItemSurface(requireContext())
     );
+    binding.linearDrawerEquipment.setBackground(
+        ViewUtil.getRippleBgListItemSurface(requireContext())
+    );
     binding.linearDrawerMasterData.setBackground(
         ViewUtil.getRippleBgListItemSurface(requireContext())
     );
@@ -185,6 +188,7 @@ public class DrawerBottomSheet extends BaseBottomSheetDialogFragment implements 
         binding.linearDrawerInventory,
         binding.linearDrawerChores,
         binding.linearDrawerTasks,
+        binding.linearDrawerEquipment,
         binding.linearDrawerRecipes,
         binding.linearDrawerMealPlan,
         binding.linearDrawerMasterData,
@@ -273,11 +277,7 @@ public class DrawerBottomSheet extends BaseBottomSheetDialogFragment implements 
       navigateCustom(DrawerBottomSheetDirections
           .actionDrawerBottomSheetDialogFragmentToTasksFragment());
     } else if (id == R.id.linear_drawer_equipment) {
-      android.os.Bundle equipmentArgs = new android.os.Bundle();
-      equipmentArgs.putString("entity", xyz.zedler.patrick.grocy.api.GrocyApi.ENTITY.EQUIPMENT);
-      NavOptions.Builder builder = new NavOptions.Builder();
-      builder.setPopUpTo(R.id.overviewStartFragment, false);
-      activity.navUtil.navigate(R.id.masterObjectListFragment, equipmentArgs);
+      activity.navUtil.navigateDeepLink(R.string.deep_link_equipmentListFragment);
       dismiss();
     } else if (id == R.id.linear_drawer_stock_report_spendings) {
       navigateCustom(DrawerBottomSheetDirections
