@@ -81,7 +81,27 @@
                 android:id="@+id/pie_chart"
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+              <LinearLayout
+                android:id="@+id/linear_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="32dp"
+                android:paddingBottom="16dp"
+                android:visibility="gone">
+
+                <TextView
+                  style="@style/Widget.Grocy.TextView.LabelLarge"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/error_empty_stock"
+                  android:textColor="?attr/colorOnSurfaceVariant" />
+
+              </LinearLayout>
 
               <LinearLayout
                 android:id="@+id/linear_filters"

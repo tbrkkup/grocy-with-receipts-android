@@ -44,7 +44,6 @@ import xyz.zedler.patrick.grocy.activity.MainActivity;
 import xyz.zedler.patrick.grocy.adapter.SpendingItemAdapter;
 import xyz.zedler.patrick.grocy.behavior.SystemBarBehavior;
 import xyz.zedler.patrick.grocy.databinding.FragmentStockReportSpendingsBinding;
-import xyz.zedler.patrick.grocy.helper.InfoFullscreenHelper;
 import xyz.zedler.patrick.grocy.model.Event;
 import xyz.zedler.patrick.grocy.model.SnackbarMessage;
 import xyz.zedler.patrick.grocy.util.ResUtil;
@@ -75,7 +74,6 @@ public class StockReportSpendingsFragment extends BaseFragment {
   private MainActivity activity;
   private FragmentStockReportSpendingsBinding binding;
   private StockReportSpendingsViewModel viewModel;
-  private InfoFullscreenHelper infoFullscreenHelper;
 
   @Override
   public View onCreateView(
@@ -90,10 +88,6 @@ public class StockReportSpendingsFragment extends BaseFragment {
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    if (infoFullscreenHelper != null) {
-      infoFullscreenHelper.destroyInstance();
-      infoFullscreenHelper = null;
-    }
     binding = null;
   }
 
@@ -109,10 +103,6 @@ public class StockReportSpendingsFragment extends BaseFragment {
     activity.setSystemBarBehavior(systemBarBehavior);
 
     binding.toolbar.setNavigationOnClickListener(v -> activity.navUtil.navigateUp());
-
-    infoFullscreenHelper = new InfoFullscreenHelper(binding.frame);
-    viewModel.getInfoFullscreenLive().observe(getViewLifecycleOwner(),
-        infoFullscreenHelper::setInfo);
 
     binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -200,11 +190,13 @@ public class StockReportSpendingsFragment extends BaseFragment {
 
   private void updateChart(List<SpendingItem> items) {
     if (items == null || items.isEmpty()) {
-      binding.pieChart.clear();
-      binding.pieChart.invalidate();
+      binding.pieChart.setVisibility(View.GONE);
+      binding.linearEmpty.setVisibility(View.VISIBLE);
       binding.recycler.setAdapter(null);
       return;
     }
+    binding.pieChart.setVisibility(View.VISIBLE);
+    binding.linearEmpty.setVisibility(View.GONE);
 
     // Show only top N slices, group the rest as "Other"
     int maxSlices = 8;
