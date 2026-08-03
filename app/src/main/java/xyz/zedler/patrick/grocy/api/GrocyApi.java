@@ -523,4 +523,12 @@ public class GrocyApi {
     return getProductPicture(filename)
         + "?force_serve_as=picture&best_fit_height=800&best_fit_width=1280";
   }
+
+  public String getEquipmentManual(String filename) {
+    String fileNameEncoded = new String(Base64.encode(
+        filename.getBytes(StandardCharsets.UTF_8),
+        Base64.DEFAULT
+    ), StandardCharsets.UTF_8);
+    return getUrl("/files/equipmentmanuals/" + fileNameEncoded.replace("\n", ""));
+  }
 }
