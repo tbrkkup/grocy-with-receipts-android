@@ -365,6 +365,28 @@ public class DownloadHelper {
     requestQueue.add(request);
   }
 
+  public void getFile(
+      String url,
+      OnBytesResponseListener onResponse,
+      OnErrorListener onError
+  ) {
+    String sessionKey = sharedPrefs
+        .getString(Constants.PREF.HOME_ASSISTANT_INGRESS_SESSION_KEY, null);
+    CustomByteArrayRequest request = new CustomByteArrayRequest(
+        Request.Method.GET,
+        url,
+        apiKey,
+        sessionKey,
+        null,
+        null,
+        onResponse::onResponse,
+        onError::onError,
+        timeoutSeconds,
+        uuidHelper
+    );
+    requestQueue.add(request);
+  }
+
   public void delete(
       String url,
       String tag,
@@ -598,6 +620,11 @@ public class DownloadHelper {
   public interface OnJSONArrayResponseListener {
 
     void onResponse(JSONArray response);
+  }
+
+  public interface OnBytesResponseListener {
+
+    void onResponse(byte[] bytes);
   }
 
   public interface OnErrorListener {

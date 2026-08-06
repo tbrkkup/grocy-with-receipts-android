@@ -1035,7 +1035,9 @@
   <string name="property_equipment">Equipment</string>
   <string name="property_equipment_singular">Equipment item</string>
   <string name="property_instruction_manual">Instruction manual</string>
+  <string name="action_open_manual">Open manual</string>
   <string name="action_delete_manual">Remove manual</string>
+  <string name="error_open_manual">No app can open this file</string>
   <string name="property_calories">Calories</string>
   <string name="property_calories_unit">Calories (unit)</string>
   <string name="property_calories_total">Calories (total)</string>

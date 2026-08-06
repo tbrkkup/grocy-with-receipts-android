@@ -21,6 +21,8 @@
 package xyz.zedler.patrick.grocy.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +47,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +66,7 @@ import xyz.zedler.patrick.grocy.databinding.FragmentMasterEquipmentBinding;
 import xyz.zedler.patrick.grocy.helper.DownloadHelper;
 import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.util.PrefsUtil;
+import androidx.core.content.FileProvider;
 import androidx.core.text.HtmlCompat;
 import xyz.zedler.patrick.grocy.util.ViewUtil;
 
@@ -84,6 +91,7 @@ public class MasterEquipmentFragment extends BaseFragment {
   private boolean pendingDeleteManual;
   private byte[] pendingManualBytes;
   private String pendingManualExtension;
+  private Uri pendingManualUri;
 
   private ActivityResultLauncher<String> manualPickerLauncher;
 
@@ -125,13 +133,14 @@ public class MasterEquipmentFragment extends BaseFragment {
     editEquipment = null;
     pendingDeleteManual = false;
     pendingManualBytes = null;
+    pendingManualUri = null;
 
     manualPickerLauncher = registerForActivityResult(
         new ActivityResultContracts.GetContent(),
         uri -> {
           if (uri == null) return;
-          String mime = requireContext().getContentResolver().getType(uri);
-          pendingManualExtension = mime != null && mime.contains("pdf") ? ".pdf" : ".bin";
+          pendingManualUri = uri;
+          pendingManualExtension = resolveExtension(uri);
           readBytesAsync(uri);
         }
     );
@@ -157,9 +166,11 @@ public class MasterEquipmentFragment extends BaseFragment {
     binding.btnDeleteManual.setOnClickListener(v -> {
       pendingDeleteManual = true;
       pendingManualBytes = null;
+      pendingManualUri = null;
       binding.textManualFilename.setText(R.string.subtitle_none_selected);
       binding.buttonDeleteManual.setVisibility(View.GONE);
     });
+    binding.btnOpenManual.setOnClickListener(v -> openManual());
 
     MasterEquipmentFragmentArgs args = MasterEquipmentFragmentArgs.fromBundle(requireArguments());
     editEquipment = args.getEquipment();
@@ -405,6 +416,102 @@ public class MasterEquipmentFragment extends BaseFragment {
   }
 
   @Nullable
+  private String resolveExtension(Uri uri) {
+    String mime = requireContext().getContentResolver().getType(uri);
+    String fromMime = mime != null
+        ? MimeTypeMap.getSingleton().getExtensionFromMimeType(mime) : null;
+    if (fromMime != null && !fromMime.isEmpty()) {
+      return "." + fromMime;
+    }
+    String path = uri.getLastPathSegment();
+    if (path != null) {
+      int dot = path.lastIndexOf('.');
+      if (dot > -1 && dot < path.length() - 1) {
+        return path.substring(dot).toLowerCase(Locale.ROOT);
+      }
+    }
+    return ".bin";
+  }
+
+  private void openManual() {
+    if (pendingManualUri != null) {
+      String mime = requireContext().getContentResolver().getType(pendingManualUri);
+      launchViewer(pendingManualUri, mime != null ? mime : "*/*");
+      return;
+    }
+    if (editEquipment == null) return;
+    String filename = editEquipment.getInstructionManualFileName();
+    if (filename == null || filename.isBlank()) return;
+
+    dlHelper.getFile(
+        grocyApi.getEquipmentManual(filename),
+        bytes -> {
+          if (binding == null || bytes == null) return;
+          File cached = writeToCache(filename, bytes);
+          if (cached == null) {
+            activity.showSnackbar(R.string.error_undefined, false);
+            return;
+          }
+          Uri uri = FileProvider.getUriForFile(
+              requireContext(), requireContext().getPackageName() + ".fileprovider", cached
+          );
+          launchViewer(uri, resolveMimeForViewing(filename, bytes));
+        },
+        this::showErrorMessage
+    );
+  }
+
+  private File writeToCache(String filename, byte[] bytes) {
+    File dir = new File(requireContext().getExternalFilesDir(null), "Manuals");
+    if (!dir.exists() && !dir.mkdirs()) return null;
+    File target = new File(dir, filename.replaceAll("[^A-Za-z0-9._-]", "_"));
+    try (FileOutputStream out = new FileOutputStream(target)) {
+      out.write(bytes);
+      return target;
+    } catch (IOException e) {
+      Log.e(TAG, "writeToCache: ", e);
+      return null;
+    }
+  }
+
+  /**
+   * Resolves the type from the file extension. Manuals uploaded by older versions of this
+   * screen are all stored as ".bin", so fall back to sniffing the magic bytes for those.
+   */
+  private String resolveMimeForViewing(String filename, byte[] bytes) {
+    int dot = filename.lastIndexOf('.');
+    if (dot > -1 && dot < filename.length() - 1) {
+      String ext = filename.substring(dot + 1).toLowerCase(Locale.ROOT);
+      String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+      if (mime != null) return mime;
+    }
+    return sniffMime(bytes);
+  }
+
+  private String sniffMime(byte[] b) {
+    if (b.length >= 4 && b[0] == 0x25 && b[1] == 0x50 && b[2] == 0x44 && b[3] == 0x46) {
+      return "application/pdf";
+    }
+    if (b.length >= 3 && (b[0] & 0xFF) == 0xFF && (b[1] & 0xFF) == 0xD8 && (b[2] & 0xFF) == 0xFF) {
+      return "image/jpeg";
+    }
+    if (b.length >= 8 && (b[0] & 0xFF) == 0x89 && b[1] == 0x50 && b[2] == 0x4E && b[3] == 0x47) {
+      return "image/png";
+    }
+    return "*/*";
+  }
+
+  private void launchViewer(Uri uri, String mimeType) {
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setDataAndType(uri, mimeType);
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    try {
+      startActivity(intent);
+    } catch (ActivityNotFoundException e) {
+      activity.showSnackbar(R.string.error_open_manual, false);
+    }
+  }
+
   private byte[] readBytes(Uri uri) {
     try (InputStream in = requireContext().getContentResolver().openInputStream(uri);
         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
