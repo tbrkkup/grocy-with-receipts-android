@@ -334,10 +334,12 @@ public class MasterEquipmentFragment extends BaseFragment {
 
     if (pendingManualBytes != null) {
       String filename = UUID.randomUUID().toString().replace("-", "") + pendingManualExtension;
+      String replaced = editEquipment != null
+          ? editEquipment.getInstructionManualFileName() : null;
       dlHelper.putFile(
           grocyApi.getEquipmentManual(filename),
           pendingManualBytes,
-          () -> persistEquipment(name, description, filename),
+          () -> persistEquipment(name, description, filename, () -> deleteManualFile(replaced)),
           error -> showErrorMessage(error)
       );
     } else {
@@ -345,18 +347,30 @@ public class MasterEquipmentFragment extends BaseFragment {
       if (editEquipment != null) {
         manualFilename = pendingDeleteManual ? null : editEquipment.getInstructionManualFileName();
       }
-      if (pendingDeleteManual && editEquipment != null
-          && editEquipment.getInstructionManualFileName() != null) {
-        dlHelper.delete(
-            grocyApi.getEquipmentManual(editEquipment.getInstructionManualFileName()),
-            r -> {}, e -> {}
-        );
-      }
-      persistEquipment(name, description, manualFilename);
+      String removed = pendingDeleteManual && editEquipment != null
+          ? editEquipment.getInstructionManualFileName() : null;
+      persistEquipment(name, description, manualFilename, () -> deleteManualFile(removed));
     }
   }
 
-  private void persistEquipment(String name, String description, String manualFilename) {
+  /**
+   * Deletes a stored manual on the server. Called only once the equipment object no longer
+   * references it, so a failure here leaves an orphaned file rather than a broken reference.
+   */
+  private void deleteManualFile(@Nullable String filename) {
+    if (filename == null || filename.isBlank()) {
+      return;
+    }
+    dlHelper.delete(
+        grocyApi.getEquipmentManual(filename),
+        response -> {},
+        error -> Log.w(TAG, "deleteManualFile: could not delete " + filename + ": " + error)
+    );
+  }
+
+  private void persistEquipment(
+      String name, String description, String manualFilename, Runnable onPersisted
+  ) {
     JSONObject json = new JSONObject();
     try {
       json.put("name", name);
@@ -374,14 +388,20 @@ public class MasterEquipmentFragment extends BaseFragment {
       dlHelper.put(
           grocyApi.getObject(GrocyApi.ENTITY.EQUIPMENT, editEquipment.getId()),
           json,
-          response -> activity.navUtil.navigateUp(),
+          response -> {
+            onPersisted.run();
+            activity.navUtil.navigateUp();
+          },
           error -> showErrorMessage(error)
       );
     } else {
       dlHelper.post(
           grocyApi.getObjects(GrocyApi.ENTITY.EQUIPMENT),
           json,
-          response -> activity.navUtil.navigateUp(),
+          response -> {
+            onPersisted.run();
+            activity.navUtil.navigateUp();
+          },
           error -> showErrorMessage(error)
       );
     }
