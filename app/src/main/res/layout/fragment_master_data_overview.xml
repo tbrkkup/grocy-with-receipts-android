@@ -290,32 +290,6 @@
 
               </LinearLayout>
 
-              <LinearLayout
-                android:id="@+id/linear_equipment"
-                style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine.Clickable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                  style="@style/Widget.Grocy.ImageView.ListItem.Icon"
-                  android:importantForAccessibility="no"
-                  android:src="@drawable/ic_round_widgets"
-                  tools:ignore="ContentDescription" />
-
-                <LinearLayout style="@style/Widget.Grocy.LinearLayout.ListItem.TextBox.Stretch">
-
-                  <TextView
-                    style="@style/Widget.Grocy.TextView.ListItem.Title"
-                    android:text="@string/property_equipment" />
-
-                  <TextView
-                    android:id="@+id/count_equipment"
-                    style="@style/Widget.Grocy.TextView.ListItem.Description" />
-
-                </LinearLayout>
-
-              </LinearLayout>
-
             </LinearLayout>
 
           </androidx.constraintlayout.widget.ConstraintLayout>

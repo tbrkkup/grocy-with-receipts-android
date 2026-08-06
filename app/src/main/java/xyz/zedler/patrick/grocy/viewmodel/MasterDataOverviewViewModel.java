@@ -29,7 +29,6 @@ import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
 import xyz.zedler.patrick.grocy.model.QuantityUnit;
-import xyz.zedler.patrick.grocy.model.Equipment;
 import xyz.zedler.patrick.grocy.model.Store;
 import xyz.zedler.patrick.grocy.model.TaskCategory;
 import xyz.zedler.patrick.grocy.repository.MasterDataOverviewRepository;
@@ -48,7 +47,6 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
   private final MutableLiveData<List<QuantityUnit>> quantityUnitsLive;
   private final MutableLiveData<List<Product>> productsLive;
   private final MutableLiveData<List<TaskCategory>> taskCategoriesLive;
-  private final MutableLiveData<List<Equipment>> equipmentLive;
 
   public MasterDataOverviewViewModel(@NonNull Application application) {
     super(application);
@@ -63,7 +61,6 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
     quantityUnitsLive = new MutableLiveData<>();
     productsLive = new MutableLiveData<>();
     taskCategoriesLive = new MutableLiveData<>();
-    equipmentLive = new MutableLiveData<>();
   }
 
   public void loadFromDatabase(boolean downloadAfterLoading) {
@@ -74,7 +71,6 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
       this.quantityUnitsLive.setValue(data.getQuantityUnits());
       this.productsLive.setValue(data.getProducts());
       this.taskCategoriesLive.setValue(data.getTaskCategories());
-      this.equipmentLive.setValue(data.getEquipment());
       if (downloadAfterLoading) {
         downloadData(false);
       }
@@ -93,8 +89,7 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
         ProductGroup.class,
         QuantityUnit.class,
         Product.class,
-        TaskCategory.class,
-        Equipment.class
+        TaskCategory.class
     );
   }
 
@@ -126,10 +121,6 @@ public class MasterDataOverviewViewModel extends BaseViewModel {
 
   public MutableLiveData<List<TaskCategory>> getTaskCategoriesLive() {
     return taskCategoriesLive;
-  }
-
-  public MutableLiveData<List<Equipment>> getEquipmentLive() {
-    return equipmentLive;
   }
 
   @Override
