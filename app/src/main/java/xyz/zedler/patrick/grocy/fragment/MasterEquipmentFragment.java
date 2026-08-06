@@ -162,7 +162,13 @@ public class MasterEquipmentFragment extends BaseFragment {
       if (hasFocus) ViewUtil.startIcon(binding.imageMasterEquipmentDescription);
     });
 
-    binding.buttonPickManual.setOnClickListener(v -> manualPickerLauncher.launch("*/*"));
+    binding.buttonPickManual.setOnClickListener(v -> {
+      if (hasManual()) {
+        openManual();
+      } else {
+        pickManual();
+      }
+    });
     binding.btnDeleteManual.setOnClickListener(v -> {
       pendingDeleteManual = true;
       pendingManualBytes = null;
@@ -170,7 +176,7 @@ public class MasterEquipmentFragment extends BaseFragment {
       binding.textManualFilename.setText(R.string.subtitle_none_selected);
       binding.buttonDeleteManual.setVisibility(View.GONE);
     });
-    binding.btnOpenManual.setOnClickListener(v -> openManual());
+    binding.btnReplaceManual.setOnClickListener(v -> pickManual());
 
     MasterEquipmentFragmentArgs args = MasterEquipmentFragmentArgs.fromBundle(requireArguments());
     editEquipment = args.getEquipment();
@@ -431,6 +437,21 @@ public class MasterEquipmentFragment extends BaseFragment {
       }
     }
     return ".bin";
+  }
+
+  private boolean hasManual() {
+    if (pendingManualUri != null) {
+      return true;
+    }
+    if (pendingDeleteManual || editEquipment == null) {
+      return false;
+    }
+    String stored = editEquipment.getInstructionManualFileName();
+    return stored != null && !stored.isBlank();
+  }
+
+  private void pickManual() {
+    manualPickerLauncher.launch("*/*");
   }
 
   private void openManual() {
