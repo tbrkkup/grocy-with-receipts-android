@@ -90,6 +90,20 @@ public class StockReportSpendingsViewModel extends BaseViewModel {
   }
 
   public void loadData(String startDate, String endDate) {
+    // Products, product groups and stores are only read from the database below, so make sure
+    // they are actually there — otherwise group labels fall back to raw ids.
+    dlHelper.updateData(
+        updated -> loadFromDatabase(startDate, endDate),
+        error -> onError(error, TAG),
+        false,
+        true,
+        Product.class,
+        ProductGroup.class,
+        Store.class
+    );
+  }
+
+  private void loadFromDatabase(String startDate, String endDate) {
     Single.zip(
         appDatabase.productDao().getProducts(),
         appDatabase.productGroupDao().getProductGroups(),
