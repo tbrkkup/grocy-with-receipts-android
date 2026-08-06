@@ -77,7 +77,7 @@
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintEnd_toEndOf="parent">
 
-              <com.github.mikephil.charting.charts.PieChart
+              <info.appdev.charting.charts.PieChart
                 android:id="@+id/pie_chart"
                 android:layout_width="match_parent"
                 android:layout_height="280dp"

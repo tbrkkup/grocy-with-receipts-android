@@ -29,11 +29,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
+import info.appdev.charting.animation.Easing;
+import info.appdev.charting.data.PieData;
+import info.appdev.charting.data.PieDataSet;
+import info.appdev.charting.data.PieEntryFloat;
+import info.appdev.charting.formatter.PercentFormatter;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -157,7 +157,7 @@ public class StockReportSpendingsFragment extends BaseFragment {
 
     binding.pieChart.setUsePercentValues(true);
     binding.pieChart.getDescription().setEnabled(false);
-    binding.pieChart.setDrawHoleEnabled(true);
+    binding.pieChart.setDrawHole(true);
     binding.pieChart.setHoleColor(colorSurface);
     binding.pieChart.setHoleRadius(52f);
     binding.pieChart.setTransparentCircleRadius(57f);
@@ -165,23 +165,23 @@ public class StockReportSpendingsFragment extends BaseFragment {
     binding.pieChart.setTransparentCircleAlpha(110);
     binding.pieChart.setDrawCenterText(false);
     binding.pieChart.setRotationEnabled(true);
-    binding.pieChart.setHighlightPerTapEnabled(true);
+    binding.pieChart.setHighlightPerTap(true);
     binding.pieChart.setDrawEntryLabels(false);
 
     // Legend
-    com.github.mikephil.charting.components.Legend legend = binding.pieChart.getLegend();
+    info.appdev.charting.components.Legend legend = binding.pieChart.getLegend();
     legend.setEnabled(true);
     legend.setTextColor(colorOnSurface);
     legend.setTextSize(12f);
-    legend.setForm(com.github.mikephil.charting.components.Legend.LegendForm.CIRCLE);
+    legend.setForm(info.appdev.charting.components.Legend.LegendForm.CIRCLE);
     legend.setFormSize(10f);
     legend.setWordWrapEnabled(true);
     legend.setHorizontalAlignment(
-        com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER);
+        info.appdev.charting.components.Legend.LegendHorizontalAlignment.CENTER);
     legend.setVerticalAlignment(
-        com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM);
+        info.appdev.charting.components.Legend.LegendVerticalAlignment.BOTTOM);
     legend.setOrientation(
-        com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL);
+        info.appdev.charting.components.Legend.LegendOrientation.HORIZONTAL);
     legend.setDrawInside(false);
 
     binding.pieChart.setNoDataText(getString(R.string.error_empty_stock));
@@ -209,12 +209,12 @@ public class StockReportSpendingsFragment extends BaseFragment {
       }
     }
 
-    List<PieEntry> entries = new ArrayList<>();
+    List<PieEntryFloat> entries = new ArrayList<>();
     for (SpendingItem item : chartItems) {
-      entries.add(new PieEntry((float) item.total, item.name));
+      entries.add(new PieEntryFloat((float) item.total, item.name));
     }
     if (otherTotal > 0) {
-      entries.add(new PieEntry((float) otherTotal, getString(R.string.subtitle_others)));
+      entries.add(new PieEntryFloat((float) otherTotal, getString(R.string.subtitle_others)));
     }
 
     PieDataSet dataSet = new PieDataSet(entries, "");
@@ -228,12 +228,12 @@ public class StockReportSpendingsFragment extends BaseFragment {
     dataSet.setValueTextSize(11f);
 
     PieData pieData = new PieData(dataSet);
-    pieData.setValueFormatter(new PercentFormatter(binding.pieChart));
+    pieData.setValueFormatter(new PercentFormatter());
     pieData.setValueTextSize(11f);
     pieData.setValueTextColor(Color.WHITE);
 
     binding.pieChart.setData(pieData);
-    binding.pieChart.animateY(600, Easing.EaseInOutQuad);
+    binding.pieChart.animateY(600, Easing.INSTANCE.getEaseInOutQuad());
     binding.pieChart.invalidate();
 
     binding.recycler.setAdapter(
