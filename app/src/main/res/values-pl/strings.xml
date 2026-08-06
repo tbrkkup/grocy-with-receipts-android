@@ -398,15 +398,6 @@
   <string name="msg_quick_mode_confirm_transfer">Transakcja, która zostanie wykonana:\n\nTransfer %1$s %2$s z %3$s\nZ lokalizacji: %4$s\nDo lokalizacji: %5$s</string>
   <!-- %1$s is a product name, %2$s an amount, %3$s a quantity unit, %4$s a due date, %5$s a price, %6$s a store and %7$s is a location -->
   <string name="msg_quick_mode_confirm_inventory">Transakcja, która zostanie wykonana:\n\nUstaw ilość stanu magazynowego %1$s na %2$s %3$s.\nZastosuj dla dodanych pozycji:\nTermin: %4$s\nCena: %5$s\nSklep: %6$s\nLokalizacja: %7$s.</string>
-  <string name="msg_compatibility">Ta wersja aplikacji nie jest kompatybilna z wersją Grocy na serwerze.
-
-Obecna wersja serwera: %1$s
-
-Wspierane wersje serwera:
-%2$s
-
-Jeśli obecna wersja serwera ma wyższy numer wersji głównej (pierwsza cyfra) niż wspierane wersje i zignorujesz to ostrzeżenie, może wystąpić utrata danych (mało prawdopodobne) lub awarie (bardziej prawdopodobne).
-Jeśli istnieje tylko niewielka różnica wersji (np. trzecia cyfra jest wyższa), możesz prawdopodobnie zignorować to ostrzeżenie.</string>
   <string name="msg_logout">Nic na serwerze nie ulegnie zmianie. Zostaniesz przekierowany do strony logowania.</string>
   <string name="msg_logout_demo">Masz uruchomioną wersję demo grocy z <u>https://grocy.info</u>.\n\n<b>Żadne zmiany które wprowadzisz nie są zapisywane!\nWszystkie dane są publicznie dostępne dopóki nie zostaną nadpisane przez serwer.</b>\n\nNa stronie logowania możesz wpisać swój własny adres serwera.</string>
   <string name="msg_logout_demo_short">Publiczny serwer demonstracyjny. Stuknij aby uzyskać więcej informacji.</string>
@@ -1385,6 +1376,8 @@ https://github.com/patzly/grocy-android</string>
   <string name="setting_date_keyboard_input_description">Zamiast kół wyboru daty</string>
   <string name="setting_date_keyboard_reverse">Do wprowadzania danych użyj odwróconego formatu daty</string>
   <string name="setting_date_keyboard_reverse_description">DDMMYY zamiast YYMMDD</string>
+  <string name="setting_barcode_amount">Użyj kwoty do wygenerowania kodu kreskowego.</string>
+  <string name="setting_barcode_amount_description">Podczas tworzenia produktu w ramach zakupu, wpisana kwota jest wykorzystywana do generowania kodu kreskowego.</string>
   <string name="setting_loading_circle">Pokaż kółko ładowania dla wszystkich żądań</string>
   <string name="setting_loading_circle_description">Pomocne dla wolnych połączeń</string>
   <string name="setting_tor">Użyj Tor-a</string>
