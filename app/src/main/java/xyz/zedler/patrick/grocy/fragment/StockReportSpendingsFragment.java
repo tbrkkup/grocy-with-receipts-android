@@ -20,6 +20,7 @@
 
 package xyz.zedler.patrick.grocy.fragment;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,15 +31,23 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import info.appdev.charting.animation.Easing;
+import info.appdev.charting.charts.PieChart;
 import info.appdev.charting.data.PieData;
 import info.appdev.charting.data.PieDataSet;
+import info.appdev.charting.data.EntryFloat;
 import info.appdev.charting.data.PieEntryFloat;
-import info.appdev.charting.formatter.PercentFormatter;
+import info.appdev.charting.formatter.IValueFormatter;
+import info.appdev.charting.interfaces.datasets.IPieDataSet;
+import info.appdev.charting.renderer.PieChartRenderer;
+import info.appdev.charting.utils.ViewPortHandler;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import xyz.zedler.patrick.grocy.R;
 import xyz.zedler.patrick.grocy.activity.MainActivity;
 import xyz.zedler.patrick.grocy.adapter.SpendingItemAdapter;
@@ -70,6 +79,11 @@ public class StockReportSpendingsFragment extends BaseFragment {
       0xFFFFEB3B, // yellow
       0xFF795548, // brown
   };
+
+  /** Below this share of the total, a slice is too narrow for the full-size label. */
+  private static final float SMALL_SLICE_PERCENT = 8f;
+  private static final float VALUE_TEXT_SIZE = 11f;
+  private static final float VALUE_TEXT_SIZE_SMALL = 8f;
 
   private MainActivity activity;
   private FragmentStockReportSpendingsBinding binding;
@@ -225,11 +239,13 @@ public class StockReportSpendingsFragment extends BaseFragment {
     dataSet.setValueLinePart1Length(0.3f);
     dataSet.setValueLinePart2Length(0.4f);
     dataSet.setValueTextColor(Color.WHITE);
-    dataSet.setValueTextSize(11f);
+    dataSet.setValueTextSize(VALUE_TEXT_SIZE);
 
     PieData pieData = new PieData(dataSet);
-    pieData.setValueFormatter(new PercentFormatter());
-    pieData.setValueTextSize(11f);
+    PercentSliceFormatter formatter = new PercentSliceFormatter();
+    pieData.setValueFormatter(formatter);
+    pieData.setValueTextSize(VALUE_TEXT_SIZE);
+    binding.pieChart.setRenderer(new DualSizeValueRenderer(binding.pieChart, formatter));
     pieData.setValueTextColor(Color.WHITE);
 
     binding.pieChart.setData(pieData);
@@ -273,6 +289,79 @@ public class StockReportSpendingsFragment extends BaseFragment {
   public void updateConnectivity(boolean online) {
     if (!online == viewModel.isOffline()) return;
     loadWithCurrentSelection();
+  }
+
+  /**
+   * Formats the percentage of a slice, and can restrict itself to either the wide or the narrow
+   * slices so that {@link DualSizeValueRenderer} can draw the two groups at different text sizes.
+   */
+  private static class PercentSliceFormatter implements IValueFormatter {
+
+    static final int ALL = 0;
+    static final int WIDE_ONLY = 1;
+    static final int NARROW_ONLY = 2;
+
+    private final DecimalFormat format =
+        new DecimalFormat("0.0", new DecimalFormatSymbols(Locale.getDefault()));
+    private int mode = ALL;
+
+    void setMode(int mode) {
+      this.mode = mode;
+    }
+
+    @Override
+    public String getFormattedValue(
+        float value, EntryFloat entry, int dataSetIndex, ViewPortHandler viewPortHandler
+    ) {
+      // The chart uses percent values, so value already is the share of the total.
+      boolean narrow = value < SMALL_SLICE_PERCENT;
+      if ((mode == WIDE_ONLY && narrow) || (mode == NARROW_ONLY && !narrow)) {
+        return "";
+      }
+      return format.format(value) + " %";
+    }
+  }
+
+  /**
+   * Draws the labels of narrow slices smaller so that they still fit into their segment.
+   *
+   * <p>The library only supports one value text size per data set, so this renders the values
+   * twice: once for the wide slices at the regular size and once for the narrow ones at the
+   * reduced size. The formatter blanks out whichever group is not part of the current pass, so
+   * no label is drawn twice and the slice geometry never has to be recomputed here.
+   */
+  private static class DualSizeValueRenderer extends PieChartRenderer {
+
+    private final PieChart chart;
+    private final PercentSliceFormatter formatter;
+
+    DualSizeValueRenderer(PieChart chart, PercentSliceFormatter formatter) {
+      super(chart, chart.getAnimator(), chart.getViewPortHandler());
+      this.chart = chart;
+      this.formatter = formatter;
+    }
+
+    @Override
+    public void drawValues(Canvas c) {
+      PieData data = chart.getData();
+      if (data == null) {
+        return;
+      }
+      IPieDataSet dataSet = data.getDataSet();
+      if (dataSet == null) {
+        return;
+      }
+      drawPass(c, dataSet, PercentSliceFormatter.WIDE_ONLY, VALUE_TEXT_SIZE);
+      drawPass(c, dataSet, PercentSliceFormatter.NARROW_ONLY, VALUE_TEXT_SIZE_SMALL);
+      formatter.setMode(PercentSliceFormatter.ALL);
+      dataSet.setValueTextSize(VALUE_TEXT_SIZE);
+    }
+
+    private void drawPass(Canvas c, IPieDataSet dataSet, int mode, float textSize) {
+      formatter.setMode(mode);
+      dataSet.setValueTextSize(textSize);
+      super.drawValues(c);
+    }
   }
 
   @NonNull
